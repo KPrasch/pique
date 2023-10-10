@@ -120,7 +120,7 @@ def _load_web3_event_types(
     config: Dict, providers: Dict[int, HTTPProvider]
 ) -> Set[EventType]:
     events = set()
-    for event in config["publishers"]:
+    for event in config["events"]:
         contract_address = event["address"]
         event_names = event["events"]
         chain_id = event["chain_id"]
@@ -133,7 +133,7 @@ def _load_web3_event_types(
             contract = w3.eth.contract(address=contract_address, abi=event_abi)
             event_type = EventType(
                 w3_type=contract.events[event_name](),
-                description=description
+                description=description,
             )
 
             events.add(event_type)
