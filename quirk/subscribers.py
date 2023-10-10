@@ -17,7 +17,7 @@ class Subscriber(NamedTuple):
 
 
 def _get_subscribers(bot, subscribers: List[SubscriberDict]) -> List[Subscriber]:
-    LOGGER.info(f"Loading subscribers: {subscribers}")
+    LOGGER.info(f"Loading subscribers: {', '.join(s.get('name') for s in subscribers)}")
     result: List[Subscriber] = list()
     for subscriber_data in subscribers:
         channel = bot.get_channel(subscriber_data['channel_id'])
