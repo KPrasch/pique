@@ -14,7 +14,7 @@ publishers:
     name: "Coordinator"
     description: "Lynx Domain Coordinator Events"
     chain_id: 137
-    abi_file: 'abis/coordinator.json'
+    abi_file: './abis/coordinator.json'
     events:
       - StartRitual
       - StartAggregationRound
@@ -27,7 +27,7 @@ publishers:
   - address: "0x8E49989F9D3aD89c8ab0de21FbA2E00C67ca872F"
     description: "Tapir Domain Coordinator Events"
     chain_id: 137
-    abi_file: 'abis/coordinator.json'
+    abi_file: './abis/coordinator.json'
     events:
       - StartRitual
       - StartAggregationRound
