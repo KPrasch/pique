@@ -5,20 +5,20 @@ import click
 import discord
 from discord.ext import commands
 
-from quirk.bot import QuirkBot
-from quirk.config import load_config
-from quirk.log import LOGGER
+from quirkbot.bot import QuirkBot
+from quirkbot.config import load_config
+from quirkbot.log import LOGGER
 
 
 @click.command()
 @click.option(
     "--config-file",
     required=False,
-    default="quirk.yml",
+    default="quirkbot.yml",
     type=click.Path(exists=True),
     help="Path to the YAML configuration file",
 )
-def quirk(config_file: str):
+def quirkbot(config_file: str):
 
     async def main():
 
@@ -45,4 +45,4 @@ def quirk(config_file: str):
 
 
 if __name__ == "__main__":
-    quirk()
+    quirkbot()

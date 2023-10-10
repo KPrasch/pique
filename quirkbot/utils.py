@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import yaml
 from cytoolz import memoize
 
-from quirk.networks import NETWORKS
+from quirkbot.networks import NETWORKS
 
 
 @memoize

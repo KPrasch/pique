@@ -2,7 +2,7 @@ from datetime import datetime
 
 import aiohttp
 
-from quirk.log import LOGGER
+from quirkbot.log import LOGGER
 
 FILTERS = {
     "contract_address": lambda e, v: e["contract_address"] == v,

@@ -6,9 +6,9 @@ from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
 
-from quirk.embeds import create_event_embed
-from quirk.log import LOGGER
-from quirk.utils import _read_abi
+from quirkbot.embeds import create_event_embed
+from quirkbot.log import LOGGER
+from quirkbot.utils import _read_abi
 
 
 class EventType:

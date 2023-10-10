@@ -5,7 +5,7 @@ import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestServer
 
-from quirk.webhooks import should_trigger_webhook, trigger_webhooks
+from quirkbot.webhooks import should_trigger_webhook, trigger_webhooks
 
 
 @pytest.fixture

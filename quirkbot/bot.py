@@ -6,17 +6,17 @@ from discord.ext import commands
 from discord.ext import tasks
 from web3 import Web3, HTTPProvider
 
-from quirk.embeds import make_status_embed
-from quirk.events import (
+from quirkbot.embeds import make_status_embed
+from quirkbot.events import (
     Event,
     EventType,
     log_event,
     _load_web3_event_types,
     send_event_message
 )
-from quirk.log import LOGGER
-from quirk.subscribers import _get_subscribers, Subscriber
-from quirk.utils import async_lock, get_infura_url
+from quirkbot.log import LOGGER
+from quirkbot.subscribers import _get_subscribers, Subscriber
+from quirkbot.utils import async_lock, get_infura_url
 
 
 class QuirkBot(commands.Cog):

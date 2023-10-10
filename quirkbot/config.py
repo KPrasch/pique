@@ -5,7 +5,7 @@ from typing import Dict, Union
 
 from dotenv import load_dotenv
 
-from quirk.utils import load_yml
+from quirkbot.utils import load_yml
 
 VARIABLE_PATTERN = r"\{\{\w*(.*?)\w*\}\}"
 
