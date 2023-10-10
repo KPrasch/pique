@@ -99,7 +99,7 @@ class QuirkBot(commands.Cog):
             for subscriber in self._subscribers:
                 self.bot.loop.create_task(send_event_message(subscriber, event))
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=60)
     async def check_web3_events(self):
         LOGGER.info("Next round of web3 event checking.")
         async with async_lock(self.lock):
