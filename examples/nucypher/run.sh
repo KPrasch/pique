@@ -1,0 +1,1 @@
+quirk --config-file quirk/conf.yml
