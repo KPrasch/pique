@@ -18,10 +18,10 @@ class MongoDBStorage(StorageInterface):
         self.db_client = db_client
 
         # Create or access a database named 'quirk'
-        self.db = self.db_client['quirk']
+        self.db = self.db_client["quirk"]
 
         # Create or access a collection named 'events'
-        self.events_collection = self.db['events']
+        self.events_collection = self.db["events"]
 
     async def insert_event(self, event: dict):
         # Async insert

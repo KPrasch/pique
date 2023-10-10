@@ -21,11 +21,11 @@ async def send_event_message(subscriber, event):
 
 class QuirkBot(commands.Cog):
     def __init__(
-            self,
-            bot,
-            providers: Dict[int, HTTPProvider],
-            events: Dict[str, EventType],
-            subscribers: List[Subscriber] = None
+        self,
+        bot,
+        providers: Dict[int, HTTPProvider],
+        events: Dict[str, EventType],
+        subscribers: List[Subscriber] = None,
     ):
         self.bot = bot
         self.events = events
@@ -33,39 +33,46 @@ class QuirkBot(commands.Cog):
 
         self.events_processed = 0
         self._subscribers = subscribers or []
-        self.event_metadata = {(name, _type.address): _type for name, _type in self.events.items()}
+        self.event_metadata = {
+            (name, _type.address): _type for name, _type in self.events.items()
+        }
         self.latest_scanned_blocks: Dict[int, int] = defaultdict(int)
 
         self.lock = asyncio.Lock()
 
     @commands.Cog.listener()
     async def on_ready(self):
-
         for chain_id, provider in self.providers.items():
             w3 = Web3(provider)
             w3.middleware_onion.clear()
             self.latest_scanned_blocks[chain_id] = w3.eth.block_number
-            LOGGER.info(f"Latest block on chain {chain_id}: {self.latest_scanned_blocks[chain_id]}")
+            LOGGER.info(
+                f"Latest block on chain {chain_id}: {self.latest_scanned_blocks[chain_id]}"
+            )
 
-        self._subscribers = _get_subscribers(bot=self.bot, subscribers=self._subscribers)
+        self._subscribers = _get_subscribers(
+            bot=self.bot, subscribers=self._subscribers
+        )
         self.bot.loop.create_task(self.initialize_check_web3_events())
         LOGGER.info(f"Bot is active!")
-        LOGGER.info(f"{len(self._subscribers)} Subscribers;"
-                    f"{len(self.events)} Events; "
-                    f"{len(self.providers)} Providers")
+        LOGGER.info(
+            f"{len(self._subscribers)} Subscribers;"
+            f"{len(self.events)} Events; "
+            f"{len(self.providers)} Providers"
+        )
 
     @classmethod
     def from_config(cls, config: Dict, bot):
-        infura_api_key = config['web3_endpoints']['infura']
-        chain_ids = {contract['chain_id'] for contract in config['publishers']}
-        providers = {cid: Web3.HTTPProvider(get_infura_url(cid, infura_api_key)) for cid in chain_ids}
-        subscribers_data = config['bot']['subscribers']
+        infura_api_key = config["web3_endpoints"]["infura"]
+        chain_ids = {contract["chain_id"] for contract in config["publishers"]}
+        providers = {
+            cid: Web3.HTTPProvider(get_infura_url(cid, infura_api_key))
+            for cid in chain_ids
+        }
+        subscribers_data = config["bot"]["subscribers"]
         events = _load_web3_event_types(config, providers=providers)
         instance = cls(
-            bot=bot,
-            providers=providers,
-            events=events,
-            subscribers=subscribers_data
+            bot=bot, providers=providers, events=events, subscribers=subscribers_data
         )
         return instance
 
@@ -83,7 +90,9 @@ class QuirkBot(commands.Cog):
         except Exception as e:
             LOGGER.error(f"Error in check_web3_events: {e}")
         finally:
-            self.latest_scanned_blocks[event_type.w3.eth.chain_id] = event_type.w3.eth.block_number
+            self.latest_scanned_blocks[
+                event_type.w3.eth.chain_id
+            ] = event_type.w3.eth.block_number
             self.events_processed += 1
 
     async def handle_events(self, events):
@@ -100,7 +109,9 @@ class QuirkBot(commands.Cog):
             for name, event_type in self.events.items():
                 latest_block = event_type.w3.eth.block_number
                 start_block = self.latest_scanned_blocks[event_type.w3.eth.chain_id] + 1
-                LOGGER.info(f"Checking for events between blocks {start_block} and {latest_block}")
+                LOGGER.info(
+                    f"Checking for events between blocks {start_block} and {latest_block}"
+                )
                 await self.fetch_events(event_type, start_block)
 
     @commands.command()
@@ -138,10 +149,12 @@ class QuirkBot(commands.Cog):
             channel_id=channel_id,
             name=event_type,
             description=f"Subscribed to {event_type} events",
-            channel=channel
+            channel=channel,
         )
         self._subscribers.append(subscriber)
-        await ctx.send(f"Subscribed to {event_type} events in channel {channel.mention}")
+        await ctx.send(
+            f"Subscribed to {event_type} events in channel {channel.mention}"
+        )
 
     @commands.command()
     async def unsubscribe(self, ctx, channel_id: int, event_type: str):
@@ -159,9 +172,13 @@ class QuirkBot(commands.Cog):
             channel_id=channel_id,
             name=event_type,
             description=f"Subscribed to {event_type} events",
-            channel=channel
+            channel=channel,
         )
         LOGGER.info(f"Removing subscriber {subscriber}")
-        self._subscribers = [s for s in self._subscribers if s.channel_id != subscriber.channel_id]
-        await ctx.send(f"Unsubscribed from {event_type} events in channel {channel.mention}")
+        self._subscribers = [
+            s for s in self._subscribers if s.channel_id != subscriber.channel_id
+        ]
+        await ctx.send(
+            f"Unsubscribed from {event_type} events in channel {channel.mention}"
+        )
         LOGGER.info(f"Removed subscriber {subscriber}")

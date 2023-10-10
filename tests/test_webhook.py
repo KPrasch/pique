@@ -21,7 +21,7 @@ def app():
         return web.json_response({}, status=200)
 
     app = web.Application()
-    app.router.add_post('/webhook.url', handle_request)
+    app.router.add_post("/webhook.url", handle_request)
     return app
 
 
@@ -30,7 +30,7 @@ async def mock_session(app, loop):
     async with TestServer(app) as server:
         mock_post = AsyncMock()
         mock_post.return_value.__aenter__.return_value.status = 200
-        with patch('aiohttp.ClientSession.post', mock_post):
+        with patch("aiohttp.ClientSession.post", mock_post):
             yield server, loop, mock_post
 
 
@@ -51,7 +51,6 @@ async def test_trigger_webhooks(app, mock_session):
         assert mock_post.called
         mock_post.assert_called_once_with(
             f"{server.make_url('/webhook.url')}",
-            json={'event_type': event['type'], 'data': event['data']},
-            headers={'Content-Type': 'application/json'}
+            json={"event_type": event["type"], "data": event["data"]},
+            headers={"Content-Type": "application/json"},
         )
-

@@ -19,17 +19,17 @@ class EventType:
 
 class Event:
     def __init__(
-            self,
-            event_type: str,
-            from_address: str,
-            to_address: str,
-            value: int,
-            log_index: int,
-            tx_index: int,
-            tx_hash: HexBytes,
-            contract_address: str,
-            block_hash: HexBytes,
-            block_number: int
+        self,
+        event_type: str,
+        from_address: str,
+        to_address: str,
+        value: int,
+        log_index: int,
+        tx_index: int,
+        tx_hash: HexBytes,
+        contract_address: str,
+        block_hash: HexBytes,
+        block_number: int,
     ):
         self.event_type = event_type
         self.from_address = from_address
@@ -49,7 +49,7 @@ class Event:
         tx_hash = self.tx_hash
         log_index = self.log_index
         if isinstance(log_index, int):
-            log_index_bytes = log_index.to_bytes(4, byteorder='big')
+            log_index_bytes = log_index.to_bytes(4, byteorder="big")
         else:
             log_index_bytes = log_index
         concatenated_data = tx_hash + log_index_bytes
@@ -57,17 +57,17 @@ class Event:
         return unique_id.hex()
 
     @classmethod
-    def from_attr_dict(cls, attr_dict: AttributeDict) -> 'Event':
-        args = attr_dict['args']
+    def from_attr_dict(cls, attr_dict: AttributeDict) -> "Event":
+        args = attr_dict["args"]
         return cls(
-            event_type=attr_dict['event'],
-            from_address=args['from'],
-            to_address=args['to'],
-            value=args['value'],
-            log_index=attr_dict['logIndex'],
-            tx_index=attr_dict['transactionIndex'],
-            tx_hash=attr_dict['transactionHash'],
-            contract_address=attr_dict['address'],
-            block_hash=attr_dict['blockHash'],
-            block_number=attr_dict['blockNumber']
+            event_type=attr_dict["event"],
+            from_address=args["from"],
+            to_address=args["to"],
+            value=args["value"],
+            log_index=attr_dict["logIndex"],
+            tx_index=attr_dict["transactionIndex"],
+            tx_hash=attr_dict["transactionHash"],
+            contract_address=attr_dict["address"],
+            block_hash=attr_dict["blockHash"],
+            block_number=attr_dict["blockNumber"],
         )

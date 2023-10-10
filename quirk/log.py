@@ -1,8 +1,16 @@
-from logging import Formatter, StreamHandler, getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
+from logging import (
+    Formatter,
+    StreamHandler,
+    getLogger,
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+    CRITICAL,
+)
 
 
 class CustomFormatter(Formatter):
-
     grey = "\x1b[38m"
     yellow = "\x1b[33m"
     red = "\x1b[31m"
