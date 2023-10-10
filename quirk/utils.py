@@ -1,6 +1,8 @@
 import json
+import os
+import re
 from contextlib import asynccontextmanager
-from typing import Dict
+from typing import Dict, Union
 
 import yaml
 from cytoolz import memoize
@@ -10,6 +12,12 @@ from web3.contract.base_contract import BaseContractEvent
 from quirk.events import EventType
 from quirk.log import LOGGER
 from quirk.networks import NETWORKS
+import os
+import yaml
+
+from dotenv import load_dotenv
+
+VARIABLE_PATTERN = r"{{\s*(\w+)\s*}}"
 
 
 @asynccontextmanager
@@ -58,7 +66,7 @@ def _load_web3_event_types(
 
 @memoize
 def _read_abi(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         return json.loads(f.read())
 
 
@@ -75,7 +83,7 @@ def humanize_event(event_instance):
         f" | To: {event_instance.to_address}",
         f" | Value: {Web3.from_wei(event_instance.value, 'ether')}",
     )
-    return '\n'.join(message)
+    return "\n".join(message)
 
 
 def log_event(event_instance):

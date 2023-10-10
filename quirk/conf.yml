@@ -1,13 +1,13 @@
 bot:
-  token: {{ DISCORD_BOT_TOKEN }}
+  token: "{{ DISCORD_BOT_TOKEN }}"
   prefix: '!'
   subscribers:
       - name: "Test Server Name"
-        channel_id: {{ SUBSCRIBER_CHANNEL_ID }}}
+        channel_id: "{{ SUBSCRIBER_CHANNEL_ID }}"
         description: "Test discord server description"
 
 web3_endpoints:
-  infura: {{ INFURA_API_KEY }}
+  infura: "{{ INFURA_API_KEY }}"
 
 publishers:
   - address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
