@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from quirk.bot import QuirkBot
 from quirk.log import LOGGER
-from quirk.utils import load_config
+from quirk.config import load_config
 
 
 async def main():

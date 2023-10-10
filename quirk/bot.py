@@ -7,10 +7,10 @@ from discord.ext import tasks
 from web3 import Web3, HTTPProvider
 
 from quirk.embeds import create_event_embed, make_status_embed
-from quirk.events import Event, EventType
+from quirk.events import Event, EventType, log_event, _load_web3_event_types
 from quirk.log import LOGGER
 from quirk.subscribers import _get_subscribers, Subscriber
-from quirk.utils import _load_web3_event_types, async_lock, log_event, get_infura_url
+from quirk.utils import async_lock, get_infura_url
 
 
 async def send_event_message(subscriber, event):
@@ -33,9 +33,6 @@ class QuirkBot(commands.Cog):
 
         self.events_processed = 0
         self._subscribers = subscribers or []
-        self.event_metadata = {
-            (name, _type.address): _type for name, _type in self.events.items()
-        }
         self.latest_scanned_blocks: Dict[int, int] = defaultdict(int)
 
         self.lock = asyncio.Lock()
@@ -56,7 +53,7 @@ class QuirkBot(commands.Cog):
         self.bot.loop.create_task(self.initialize_check_web3_events())
         LOGGER.info(f"Bot is active!")
         LOGGER.info(
-            f"{len(self._subscribers)} Subscribers;"
+            f"{len(self._subscribers)} Subscribers; "
             f"{len(self.events)} Events; "
             f"{len(self.providers)} Providers"
         )
@@ -106,11 +103,15 @@ class QuirkBot(commands.Cog):
     async def check_web3_events(self):
         LOGGER.info("Next round of web3 event checking.")
         async with async_lock(self.lock):
-            for name, event_type in self.events.items():
+            for event_type in self.events:
+                event_name = event_type.name
+                chain_id = event_type.chain_id
+                contract_address = event_type.address
                 latest_block = event_type.w3.eth.block_number
                 start_block = self.latest_scanned_blocks[event_type.w3.eth.chain_id] + 1
                 LOGGER.info(
-                    f"Checking for events between blocks {start_block} and {latest_block}"
+                    f"Checking for {event_name} {contract_address[:8]}@{chain_id} "
+                    f"between blocks {start_block} and {latest_block}"
                 )
                 await self.fetch_events(event_type, start_block)
 

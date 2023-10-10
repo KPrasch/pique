@@ -1,20 +1,42 @@
 import datetime
+from typing import Dict, Set
 
 from eth_utils import keccak
 from hexbytes import HexBytes
+from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
+
+from quirk.log import LOGGER
+from quirk.utils import _read_abi
 
 
 class EventType:
     def __init__(self, w3_type, description: str):
-        self.w3_type = w3_type
+        self._type = w3_type
         self.description = description
 
-    def __getattr__(self, item):
-        if hasattr(self.w3_type, item):
-            return getattr(self.w3_type, item)
-        else:
-            return getattr(self, item)
+    def get_logs(self, *args, **kwargs):
+        return self._type.get_logs(*args, **kwargs)
+
+    @property
+    def w3(self):
+        return self._type.w3
+
+    @property
+    def name(self):
+        return self._type.abi["name"]
+
+    @property
+    def abi(self):
+        return self._type.abi
+
+    @property
+    def chain_id(self):
+        return self.w3.eth.chain_id
+
+    @property
+    def address(self):
+        return self._type.address
 
 
 class Event:
@@ -71,3 +93,46 @@ class Event:
             block_hash=attr_dict["blockHash"],
             block_number=attr_dict["blockNumber"],
         )
+
+
+def humanize_event(event_instance):
+    message = (
+        f"Event: {event_instance.event_type}",
+        f" | Block Number: {event_instance.block_number}",
+        f" | Log Index: {event_instance.log_index}",
+        f" | Transaction Index: {event_instance.tx_index}",
+        f" | Transaction Hash: {event_instance.tx_hash.hex()}",
+        f" | Contract Address: {event_instance.contract_address}",
+        f" | Block Hash: {event_instance.block_hash.hex()}",
+        f" | From: {event_instance.from_address}",
+        f" | To: {event_instance.to_address}",
+        f" | Value: {Web3.from_wei(event_instance.value, 'ether')}",
+    )
+    return "\n".join(message)
+
+
+def log_event(event_instance):
+    LOGGER.debug(humanize_event(event_instance))
+
+
+def _load_web3_event_types(
+    config: Dict, providers: Dict[int, HTTPProvider]
+) -> Set[EventType]:
+    events = set()
+    for event in config["publishers"]:
+        contract_address = event["address"]
+        event_names = event["events"]
+        chain_id = event["chain_id"]
+        abi_filepath = event["abi_file"]
+        description = event["description"]
+
+        event_abi = _read_abi(abi_filepath)
+        w3 = Web3(providers[chain_id])
+        for event_name in event_names:
+            contract = w3.eth.contract(address=contract_address, abi=event_abi)
+            event_type = EventType(
+                w3_type=contract.events[event_name](), description=description
+            )
+
+            events.add(event_type)
+    return events
