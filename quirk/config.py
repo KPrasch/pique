@@ -1,10 +1,11 @@
-from quirk.utils import load_yml
 import os
 import re
 from pathlib import Path
-from dotenv import load_dotenv
 from typing import Dict, Union
 
+from dotenv import load_dotenv
+
+from quirk.utils import load_yml
 
 VARIABLE_PATTERN = r"\{\{\w*(.*?)\w*\}\}"
 
@@ -34,10 +35,14 @@ def set_env_vars(data: Union[Dict, list], prefix: str = ""):
             set_env_vars(item, new_prefix)
 
 
-def load_config(file_path: Path) -> Dict:
-    load_dotenv(file_path.parent / ".env")
+def load_config(path: Path) -> Dict:
+
+    yaml_content = load_yml(path)
+    dotenv_path = yaml_content.get("env", path.parent / ".env")
+    load_dotenv(dotenv_path)
+
     env_vars = {key: os.environ.get(key, "") for key in os.environ}
-    yaml_content = load_yml(file_path)
     replace_placeholders(yaml_content, env_vars)
     set_env_vars(yaml_content)
+
     return yaml_content
