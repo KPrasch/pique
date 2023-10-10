@@ -19,6 +19,12 @@ setup(
     description='A [discord] bot for relaying Web3 events',
     packages=find_packages(),
     install_requires=requirements,
+    py_modules=['quirk'],
+    entry_points={
+        'console_scripts': [
+            'quirk = quirk.cli:quirk',
+        ]
+    },
     extras_require={
         'dev': dev_requirements,  # Include development dependencies under 'dev' extras
     },
