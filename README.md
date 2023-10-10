@@ -1,61 +1,79 @@
-# Quirk
+# Quirk 🤨 - *Listen to Ethereum. Speak Discord.*
 
-Quirk is a bot that listens to Ethereum events and publishes them to Discord.
+Quirk is the bot that bridges the Ethereum universe with Discord. If Ethereum sneezes, you get a tissue on Discord. It's that simple. No fluff, no jargon, just quirk.
 
-##### Docker Build
+## 🛠 Quirk Configuration 101
 
-From the project root directory, run the following command to build the docker image:
-
-```bash
-docker build -t kprasch/quirk:latest .
-```
-
-###### Configuration
-
-Here is an example configuration file to use with the docker image:
+**Quirk up your YAML file** like this example below. Save it as \`quirk.yml\`.
 
 ```yaml
 name: "Relay Name"
 bot:
-  token: "{{ DISCORD_BOT_TOKEN }}"
+  token: "{{ YOUR_DISCORD_BOT_TOKEN }}"
   prefix: '!'
   subscribers:
-      - name: "Subscriber Name"
-        channel_id: "{{ SUBSCRIBER_CHANNEL_ID }}"
-        description: "Subscriber Description"
+    - name: "SubscriberName"
+      channel_id: "{{ DISCORD_CHANNEL_ID }}"
+      description: "Channel to Wake Up When Ethereum Sings"
 
 web3_endpoints:
-  infura: "{{ INFURA_API_KEY }}"
+  infura: "{{ YOUR_INFURA_API_KEY }}"
 
 publishers:
-  - address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
-    name: "Coordinator"
-    description: "Lynx Domain Coordinator Events"
+  - address: "0xYourEthereumAddressHere"
+    name: "CoolEvent"
+    description: "Explains Itself, Really"
     chain_id: 137
-    abi_file: './abis/coordinator.json'
+    abi_file: './abis/yourABI.json'
     events:
-      - StartRitual
-      - EndRitual
+      - EventName1
+      - EventName2
 ```
 
-##### Docker Run
+_Quirk is opinionated but highly customizable._
+
+---
+
+## 🏃‍♀️ Running Quirk: Just Do It
+
+Make sure your directory looks like this:
 
 ```
 project_root
     ├── abis
-    │    └── contract.json
+    │    └── yourABI.json
     └── quirk.yml
-
 ```
 
-From the project directory, run the following command to run the docker image:
+**Step 2**: To get Quirk on its feet, run:
 
 ```bash
-docker run -name quirk --detach --rm -v .:/app -kprasch/quirk:latest quirk
+docker run --name quirk --detach --rm -v $(pwd):/app kprasch/quirk:latest
 ```
+_Quirk is now eavesdropping on Ethereum for you._
 
-To read the logs from the docker image:
+---
+
+## 📜 Debugging or Stalking Quirk
+
+To see what Quirk is up to:
 
 ```bash
 docker logs -f quirk
 ```
+_Quirk doesn't mind, it has nothing to hide._
+
+---
+
+## 🔨 Dockerize the Quirkiness
+
+**Step 1**: Open your trusty terminal and move to the project's root. Then build the Docker image like this:
+
+```bash
+docker build -t kprasch/quirk:latest .
+```
+_Because Quirk is cool, but a Dockerized Quirk is cooler._
+
+---
+
+There you have it! An event bot that's as simple to set up as making instant noodles 🍜.
