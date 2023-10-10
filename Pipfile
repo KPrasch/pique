@@ -8,6 +8,7 @@ web3 = "*"
 discord = {py = "*"}
 pyyaml = "*"
 python-dotenv = "*"
+click = "*"
 
 [dev-packages]
 pytest = "*"
@@ -16,7 +17,6 @@ pytest-asyncio = "*"
 pre-commit = "*"
 black = "*"
 aioresponses = "*"
-
 
 [requires]
 python_version = "3.10"

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "988c929dafdf7954d15b275151b121d66483edbab213909b9f6658c3d3a8585b"
+            "sha256": "793ad857ba5db88e559fd651adc4f96d42ebe7d81caac00107b67986daaa8aef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -364,6 +364,14 @@
             "markers": "python_full_version >= '3.7.0'",
             "version": "==3.3.0"
         },
+        "click": {
+            "hashes": [
+                "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28",
+                "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"
+            ],
+            "index": "pypi",
+            "version": "==8.1.7"
+        },
         "cytoolz": {
             "hashes": [
                 "sha256:00547da587f124b32b072ce52dd5e4b37cf199fedcea902e33c67548523e4678",
@@ -484,7 +492,7 @@
                 "sha256:60d88788d53725794cdb07c0f0bb0df2a31a6e1ad19644313fe6117ac24eeeb0",
                 "sha256:abd83410a5326145bf178675c276de0ed154f6dc695dcad1beafaa44d97f44ae"
             ],
-            "markers": "python_full_version >= '3.7.2' and python_version < '4'",
+            "markers": "python_version < '4' and python_full_version >= '3.7.2'",
             "version": "==4.2.1"
         },
         "eth-account": {
@@ -533,7 +541,7 @@
                 "sha256:a773dbb7d78fcd1539c30264193ca26ec965f3abca2711748e307f117b0a10f5",
                 "sha256:a92f6896896752143a4704c57441eedf7b1f65d5df4b1c20cb802bb4aa602d7e"
             ],
-            "markers": "python_full_version >= '3.7.2' and python_version < '4'",
+            "markers": "python_version < '4' and python_full_version >= '3.7.2'",
             "version": "==3.5.0"
         },
         "eth-utils": {
@@ -1617,7 +1625,7 @@
                 "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28",
                 "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"
             ],
-            "markers": "python_version >= '3.7'",
+            "index": "pypi",
             "version": "==8.1.7"
         },
         "distlib": {
