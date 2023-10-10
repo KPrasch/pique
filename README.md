@@ -44,12 +44,18 @@ publishers:
 project_root
     ├── abis
     │    └── contract.json
-    └── conf.yml
+    └── quirk.yml
 
 ```
 
 From the project directory, run the following command to run the docker image:
 
 ```bash
-docker run -it -v .:/app kprasch/quirk:latest quirk --config-file conf.yml
+docker run -name quirk --detach --rm -v .:/app -kprasch/quirk:latest quirk
+```
+
+To read the logs from the docker image:
+
+```bash
+docker logs -f quirk
 ```

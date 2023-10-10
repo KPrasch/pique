@@ -1,3 +1,5 @@
+name: "Coordinator Events Relay"
+env: "./.env"
 bot:
   token: "{{ DISCORD_BOT_TOKEN }}"
   prefix: '!'

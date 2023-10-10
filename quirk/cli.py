@@ -13,7 +13,8 @@ from quirk.log import LOGGER
 @click.command()
 @click.option(
     "--config-file",
-    required=True,
+    required=False,
+    default="quirk.yml",
     type=click.Path(exists=True),
     help="Path to the YAML configuration file",
 )
