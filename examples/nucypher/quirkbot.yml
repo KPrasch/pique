@@ -1,5 +1,5 @@
 quirk:
-  name: "Coordinator Events Relay"
+  name: "Coordinator Events Scanner"
   env: "./.env"
   batch_size: 50  # events
   loop_interval: 120  # seconds

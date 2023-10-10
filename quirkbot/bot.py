@@ -188,17 +188,3 @@ class QuirkBot(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as e:
             LOGGER.error(f"Error in status: {e}")
-
-    @commands.command()
-    @commands.has_permissions(administrator=True)  # Restrict to admins
-    async def set_loop_interval(self, ctx, interval: int):
-        """Sets the interval for the event checking loop."""
-
-        # Validation for the new interval (for example, it should be greater than 0)
-        if interval <= 0:
-            await ctx.send("Interval must be greater than zero.")
-            return
-
-        self.check_web3_events.change_interval(seconds=interval)
-        await ctx.send(f"Loop interval has been set to {interval} seconds.")
-
