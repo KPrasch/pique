@@ -131,7 +131,8 @@ def _load_web3_event_types(
         for event_name in event_names:
             contract = w3.eth.contract(address=contract_address, abi=event_abi)
             event_type = EventType(
-                w3_type=contract.events[event_name](), description=description
+                w3_type=contract.events[event_name](),
+                description=description
             )
 
             events.add(event_type)
