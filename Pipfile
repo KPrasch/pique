@@ -4,18 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord = {py = "*"}
 web3 = "*"
-aioresponses = "*"
-mongomock = "*"
+discord = {py = "*"}
 pyyaml = "*"
 python-dotenv = "*"
-black = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-mock = "*"
 pytest-asyncio = "*"
+pre-commit = "*"
+black = "*"
+aioresponses = "*"
+
 
 [requires]
 python_version = "3.10"
