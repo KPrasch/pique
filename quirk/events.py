@@ -6,6 +6,7 @@ from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
 
+from quirk.embeds import create_event_embed
 from quirk.log import LOGGER
 from quirk.utils import _read_abi
 
@@ -137,3 +138,9 @@ def _load_web3_event_types(
 
             events.add(event_type)
     return events
+
+
+async def send_event_message(subscriber, event):
+    LOGGER.info(f"Sending event #{event.id[:8]} to channel #{subscriber.channel_id}")
+    embed = create_event_embed(event)
+    await subscriber.channel.send(embed=embed)

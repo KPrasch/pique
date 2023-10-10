@@ -6,17 +6,17 @@ from discord.ext import commands
 from discord.ext import tasks
 from web3 import Web3, HTTPProvider
 
-from quirk.embeds import create_event_embed, make_status_embed
-from quirk.events import Event, EventType, log_event, _load_web3_event_types
+from quirk.embeds import make_status_embed
+from quirk.events import (
+    Event,
+    EventType,
+    log_event,
+    _load_web3_event_types,
+    send_event_message
+)
 from quirk.log import LOGGER
 from quirk.subscribers import _get_subscribers, Subscriber
 from quirk.utils import async_lock, get_infura_url
-
-
-async def send_event_message(subscriber, event):
-    LOGGER.info(f"Sending event #{event.id[:8]} to channel #{subscriber.channel_id}")
-    embed = create_event_embed(event)
-    await subscriber.channel.send(embed=embed)
 
 
 class QuirkBot(commands.Cog):
