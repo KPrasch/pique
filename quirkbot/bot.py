@@ -89,23 +89,22 @@ class QuirkBot(commands.Cog):
     def from_config(cls, config: Dict, bot):
         try:
 
-            # top-level keys
+            # required top-level keys
             quirk = config["quirk"]
-            events = config["events"]
-            web3 = config["web3"]
-            bot_config = config["bot"]
+            contracts = config["contracts"]
 
-            # nested keys
+            # required nested keys
             name = quirk["name"]
-            infura_api_key = web3["infura"]
-            chain_ids = {contract["chain_id"] for contract in events}
-            subscribers_data = bot_config["subscribers"]
+            infura_api_key = quirk["infura"]
+            chain_ids = {contract["chain_id"] for contract in contracts}
+            subscribers_data = quirk["subscribers"]
 
         except KeyError as e:
             message = "missing required key in configuration file: (quirk|web3|bot|events)."
             LOGGER.error(message)
             raise e
 
+        # optional fields
         batch_size = quirk.get("batch_size", defaults.BATCH_SIZE)
         loop_interval = quirk.get("loop_interval", defaults.LOOP_INTERVAL)
         start_block = quirk.get("start_block", defaults.START_BLOCK)

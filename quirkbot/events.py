@@ -15,6 +15,7 @@ from quirkbot.log import LOGGER
 class Event:
     def __init__(
         self,
+        contract_name: str,
         color: int,
         description: str,
         chain_id: int,
@@ -27,6 +28,7 @@ class Event:
         block_number: int,
         args: Dict = None,
     ):
+        self.contract_name = contract_name
         self.color = color
         self.description = description
         self.chain_id = chain_id
@@ -69,8 +71,15 @@ class Event:
 
 
 class EventContainer:
-    def __init__(self, w3_type, description: str, color: int):
+    def __init__(
+            self,
+            w3_type,
+            contract_name: str,
+            description: str,
+            color: int
+    ):
         self._type = w3_type
+        self.contract_name = contract_name
         self.description = description
         self.color = color
 
@@ -83,6 +92,7 @@ class EventContainer:
                 description=self.description,
                 chain_id=self.chain_id,
                 color=self.color,
+                contract_name=self.contract_name
             )
             events.append(event)
         return events
@@ -128,9 +138,10 @@ def log_event(event_instance):
 def _load_web3_event_types(
     config: Dict, providers: Dict[int, HTTPProvider]
 ) -> Set[EventContainer]:
-    events = set()
-    for event in config["events"]:
+    events = list()
+    for event in config["contracts"]:
         contract_address = event["address"]
+        contract_name = event["name"]
         event_names = event["events"]
         chain_id = event["chain_id"]
         abi_filepath = event["abi_file"]
@@ -144,9 +155,10 @@ def _load_web3_event_types(
                 w3_type=contract.events[name](),
                 description=description,
                 color=color,
+                contract_name=contract_name,
             )
 
-            events.add(event_container)
+            events.append(event_container)
     return events
 
 
