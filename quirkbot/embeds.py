@@ -5,6 +5,15 @@ from discord import Embed
 from quirkbot.networks import NETWORKS
 
 
+def _inline_code(text):
+    return f"`{text}`"
+
+
+def _etherscan_link(network, explorer, path, text):
+    base_url = f"https://{network}.{explorer}"
+    return f"[{text}]({base_url}/{path})"
+
+
 def _get_name(chain_id: int) -> str:
     chain_data = NETWORKS.get(chain_id)
     if chain_data:
@@ -19,6 +28,11 @@ def pretty_format_blocks(latest_scanned_blocks):
         for chain_id, block_number in latest_scanned_blocks.items()
     ]
     return ", ".join(formatted_blocks)
+
+
+def add_event_args_fields(embed, event):
+    for key, val in event.args.items():
+        embed.add_field(name=key, value=_inline_code(str(val)), inline=False)
 
 
 def format_uptime(raw_uptime):
@@ -68,15 +82,6 @@ async def make_status_embed(w3c, ctx):
     return embed
 
 
-def _inline_code(text):
-    return f"`{text}`"
-
-
-def _etherscan_link(network, explorer, path, text):
-    base_url = f"https://{network}.{explorer}"
-    return f"[{text}]({base_url}/{path})"
-
-
 def get_field_values(event, base_url):
     contract_address_link = _etherscan_link(event.contract_address, 'address', base_url)
     transaction_hash_link = _etherscan_link(event.tx_hash.hex(), 'tx', base_url)
@@ -89,11 +94,6 @@ def get_field_values(event, base_url):
         "Transaction Index": (event.tx_index, True),
         "Log Index": (event.log_index, True),
     }
-
-
-def add_event_args_fields(embed, event):
-    for key, val in event.args.items():
-        embed.add_field(name=key, value=_inline_code(str(val)), inline=False)
 
 
 def add_predefined_fields(embed, event, network, explorer):
@@ -122,11 +122,11 @@ def add_predefined_fields(embed, event, network, explorer):
     embed.add_field(name="Log Index", value=str(event.log_index), inline=True)
 
 
-def create_event_embed(event):
+def create_event_embed(event: 'Event'):
     network, explorer = NETWORKS[event.chain_id]
 
     embed = Embed(
-        title=f"New {event.event_type} Event",
+        title=f"New {event.contract_name} {event.event_type} Event",
         description=event.description,
         color=event.color,
         timestamp=event.timestamp or None,
