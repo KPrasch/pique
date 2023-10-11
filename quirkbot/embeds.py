@@ -1,36 +1,43 @@
 from collections import defaultdict
 
 from discord import Embed
-from web3 import Web3
 
 from quirkbot.networks import NETWORKS
+
+
+def pretty_format_blocks(latest_scanned_blocks, networks=NETWORKS):
+    formatted_blocks = [
+        f"{networks.get(network_id, network_id)}: {block_number}"
+        for network_id, block_number in latest_scanned_blocks.items()
+    ]
+    return ", ".join(formatted_blocks)
+
+
+def format_uptime(raw_uptime):
+    return (f"{raw_uptime.days}D "
+            f"{raw_uptime.seconds // 3600}H "
+            f"{(raw_uptime.seconds // 60) % 60}M "
+            f"{raw_uptime.seconds % 60}S")
 
 
 async def make_status_embed(w3c, ctx):
     embed = Embed(
         title=f"{w3c.name} Status",
         color=000000,
-        # description="Current status of the bot."
+        description=""
     )
 
-    pretty_blocks = ", ".join(f"{NETWORKS.get(k, k)}: {v}" for k, v in w3c.latest_scanned_blocks.items())
-    embed.add_field(
-        name="Latest Scanned Blocks",
-        value=pretty_blocks,
-        inline=False
-    )
+    latest_blocks = pretty_format_blocks(w3c.latest_scanned_blocks)
+
+    embed.add_field(name="Latest Scanned Blocks", value=latest_blocks, inline=False)
     embed.add_field(name="Processed", value=w3c.events_processed, inline=True)
     embed.add_field(name="Subscribers", value=len(w3c._subscribers), inline=True)
     embed.add_field(name="Events", value=len(w3c.events), inline=True)
     embed.add_field(name="Loop Interval", value=w3c.loop_interval, inline=True)
     embed.add_field(name="Batch Size", value=w3c.batch_size, inline=True)
 
-    raw_uptime = w3c.uptime
-    pretty_up_time = (f"{raw_uptime.days}D "
-                      f"{raw_uptime.seconds // 3600}H "
-                      f"{(raw_uptime.seconds // 60) % 60}M "
-                      f"{raw_uptime.seconds % 60}S")
-    embed.add_field(name="Uptime", value=pretty_up_time, inline=True)
+    uptime = format_uptime(w3c.uptime)
+    embed.add_field(name="Uptime", value=uptime, inline=True)
 
     contract_events = defaultdict(list)
     for event_type in w3c.events:
@@ -52,35 +59,73 @@ async def make_status_embed(w3c, ctx):
     embed.set_footer(text=f"Status requested by: {ctx.author.display_name}")
     return embed
 
-def create_event_embed(event_instance):
+
+def _inline_code(text):
+    return f"`{text}`"
+
+
+def _etherscan_link(network, explorer, path, text):
+    base_url = f"https://{network}.{explorer}"
+    return f"[{text}]({base_url}/{path})"
+
+
+def get_field_values(event, base_url):
+    contract_address_link = _etherscan_link(event.contract_address, 'address', base_url)
+    transaction_hash_link = _etherscan_link(event.tx_hash.hex(), 'tx', base_url)
+    block_number_link = _etherscan_link(event.block_number, 'block', base_url)
+
+    return {
+        "Contract Address": (contract_address_link, False),
+        "Transaction Hash": (transaction_hash_link, False),
+        "Block Number": (block_number_link, True),
+        "Transaction Index": (event.tx_index, True),
+        "Log Index": (event.log_index, True),
+    }
+
+
+def add_event_args_fields(embed, event):
+    for key, val in event.args.items():
+        embed.add_field(name=key, value=_inline_code(str(val)), inline=False)
+
+
+def add_predefined_fields(embed, event, network, explorer):
+    contract_link = _etherscan_link(
+        network,
+        explorer,
+        f"address/{event.contract_address}",
+        event.contract_address
+    )
+    tx_link = _etherscan_link(
+        network,
+        explorer,
+        f"tx/{event.tx_hash.hex()}",
+        event.tx_hash.hex()
+    )
+    block_link = _etherscan_link(
+        network,
+        explorer,
+        f"block/{event.block_number}",
+        str(event.block_number)
+    )
+    embed.add_field(name="Contract Address", value=contract_link, inline=False)
+    embed.add_field(name="Transaction Hash", value=tx_link, inline=False)
+    embed.add_field(name="Block Number", value=block_link, inline=True)
+    embed.add_field(name="Transaction Index", value=str(event.tx_index), inline=True)
+    embed.add_field(name="Log Index", value=str(event.log_index), inline=True)
+
+
+def create_event_embed(event):
+    network, explorer = NETWORKS[event.chain_id]
+
     embed = Embed(
-        title=f"New {event_instance.event_type} Event",
-        description="",  # event_instance.description or str(),
-        color=0x00FF00,  # You can choose your own color here
-        timestamp=event_instance.timestamp or None,  # Optional: add a timestamp
+        title=f"New {event.event_type} Event",
+        description=event.description,
+        color=event.color,
+        timestamp=event.timestamp or None,
     )
 
-    # embed.set_footer(text="Powered by QuirkBot", icon_url="your_bot_icon_url_here")  # Optional: add a footer
-    # embed.set_thumbnail(url="your_thumbnail_url_here")  # Optional: add a thumbnail
-
-    embed.add_field(name="Block Number", value=event_instance.block_number, inline=True)
-    embed.add_field(name="Log Index", value=event_instance.log_index, inline=True)
-    embed.add_field(
-        name="Transaction Index", value=event_instance.tx_index, inline=True
-    )
-    embed.add_field(
-        name="Transaction Hash", value=event_instance.tx_hash.hex(), inline=False
-    )
-    embed.add_field(
-        name="Contract Address", value=event_instance.contract_address, inline=False
-    )
-    embed.add_field(
-        name="Block Hash", value=event_instance.block_hash.hex(), inline=False
-    )
-    embed.add_field(name="From", value=event_instance.from_address, inline=False)
-    embed.add_field(name="To", value=event_instance.to_address, inline=False)
-    embed.add_field(
-        name="Value", value=Web3.from_wei(event_instance.value, "ether"), inline=False
-    )
+    # Add fields to the embed
+    add_predefined_fields(embed, event, network, explorer)
+    add_event_args_fields(embed, event)
 
     return embed

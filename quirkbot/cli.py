@@ -5,6 +5,7 @@ import click
 import discord
 from discord.ext import commands
 
+from quirkbot import defaults
 from quirkbot.bot import QuirkBot
 from quirkbot.config import load_config
 from quirkbot.log import LOGGER
@@ -14,7 +15,7 @@ from quirkbot.log import LOGGER
 @click.option(
     "--config-file",
     required=False,
-    default="quirkbot.yml",
+    default=defaults.DEFAULT_CONFIG_FILEPATH,
     type=click.Path(exists=True),
     help="Path to the YAML configuration file",
 )
@@ -38,6 +39,7 @@ def quirkbot(config_file: str):
         bot = commands.Bot(command_prefix=command_prefix, intents=intents)
         await bot.add_cog(QuirkBot.from_config(config=config, bot=bot))
         LOGGER.info(f"Added cog to bot.")
+
         await bot.start(config["bot"]["token"])
 
     LOGGER.info("Starting Up...")

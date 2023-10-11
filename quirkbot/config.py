@@ -1,48 +1,39 @@
 import os
-import re
 from pathlib import Path
-from typing import Dict, Union
 
+import yaml
 from dotenv import load_dotenv
+from jinja2 import Template
 
-from quirkbot.utils import load_yml
-
-VARIABLE_PATTERN = r"\{\{\w*(.*?)\w*\}\}"
-
-
-def replace_placeholders(yaml_dict, env_vars):
-    for key, value in yaml_dict.items():
-        if isinstance(value, dict):
-            replace_placeholders(value, env_vars)
-        elif isinstance(value, str):
-            # Search for all placeholders and replace them with actual env vars
-            for match in re.findall(VARIABLE_PATTERN, value):
-                match = match.strip()
-                if match in env_vars:
-                    env_value = env_vars[match]
-                    value = value.replace(f"{{{{ {match} }}}}", env_value)
-            yaml_dict[key] = value
+from quirkbot import defaults
+from quirkbot._utils import _read_file
 
 
-def set_env_vars(data: Union[Dict, list], prefix: str = ""):
-    if isinstance(data, dict):
-        for key, value in data.items():
-            new_prefix = f"{prefix}{key}_" if prefix else f"{key}_"
-            set_env_vars(value, new_prefix)
-    elif isinstance(data, list):
-        for i, item in enumerate(data):
-            new_prefix = f"{prefix}{i}_"
-            set_env_vars(item, new_prefix)
+def _load_partial_config(path: Path) -> dict:
+    config_str = _read_file(path)
+    # Partially load YAML to dictionary just to get the env path
+    partial_config = yaml.safe_load(config_str)
+    return partial_config
 
 
-def load_config(path: Path) -> Dict:
+def load_config(path: Path) -> dict:
+    # Step 0: Load partial config to find .env path
+    partial_config = _load_partial_config(path)
+    dotenv_rel_path = partial_config.get('env', defaults.DEFAULT_DOTENV_FILEPATH)
+    dotenv_path = path.parent / dotenv_rel_path
 
-    yaml_content = load_yml(path)
-    dotenv_path = yaml_content.get("env", path.parent / ".env")
+    # Step 1: Load environment variables
     load_dotenv(dotenv_path)
-
     env_vars = {key: os.environ.get(key, "") for key in os.environ}
-    replace_placeholders(yaml_content, env_vars)
-    set_env_vars(yaml_content)
 
-    return yaml_content
+    # Step 2: Load entire file into a string
+    config_str = _read_file(path)
+
+    # Step 3: Use Jinja2 to render the template
+    template = Template(config_str)
+    rendered_config_str = template.render(**env_vars)
+
+    # Step 4: Convert the string back to dictionary
+    config_dict = yaml.safe_load(rendered_config_str)
+
+    return config_dict
