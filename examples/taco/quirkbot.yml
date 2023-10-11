@@ -13,17 +13,17 @@ quirk:
 
 contracts:
   - name: "Coordinator"
-    address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
+    address: "0x8E49989F9D3aD89c8ab0de21FbA2E00C67ca872F"
     description: "Lynx Domain DKG"
-    chain_id: 137
+    chain_id: 80001
     abi_file: './abis/Coordinator.json'
     events:
-      - StartRitual
       - EndRitual
+      - StartRitual
   - name: "Coodinator"
-    address: "0x8E49989F9D3aD89c8ab0de21FbA2E00C67ca872F"
+    address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
     description: "Tapir Domain DKG"
-    chain_id: 137
+    chain_id: 80001
     abi_file: './abis/Coordinator.json'
     events:
       - StartRitual
