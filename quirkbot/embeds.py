@@ -49,9 +49,6 @@ async def make_status_embed(w3c, ctx):
         description=""
     )
 
-    latest_blocks = pretty_format_blocks(w3c.latest_scanned_blocks)
-
-    embed.add_field(name="Latest Scanned Blocks", value=latest_blocks, inline=False)
     embed.add_field(name="Processed", value=w3c.events_processed, inline=True)
     embed.add_field(name="Subscribers", value=len(w3c._subscribers), inline=True)
     embed.add_field(name="Events", value=len(w3c.events), inline=True)
@@ -136,4 +133,5 @@ def create_event_embed(event: 'Event'):
     add_predefined_fields(embed, event, network, explorer)
     add_event_args_fields(embed, event)
 
+    LOGGER.debug(f"Created embed for event: {event}")
     return embed

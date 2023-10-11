@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 from asyncio import Queue
-from collections import defaultdict
 from typing import Dict, List
 
 from discord.ext import commands
@@ -28,7 +27,7 @@ class QuirkBot(commands.Cog):
         batch_size: int,
         start_block: int,
         loop_interval: int,
-        events: Dict[str, EventContainer],
+        events: List[EventContainer],
         providers: Dict[int, HTTPProvider],
         subscribers: List[Subscriber] = None
     ):
@@ -40,14 +39,12 @@ class QuirkBot(commands.Cog):
         self.batch_size = batch_size
         self.start_block = start_block
 
-        self.lock = asyncio.Lock()
         self.task_queue = Queue()
 
         self.events_processed = 0
         self._subscribers_data = subscribers or []
         self._subscribers = None
 
-        self.latest_scanned_blocks: Dict[int, int] = defaultdict(int)
         self.loop_interval = loop_interval
         self.check_web3_events.change_interval(seconds=self.loop_interval)
         self.start_time = datetime.datetime.now()
@@ -61,11 +58,6 @@ class QuirkBot(commands.Cog):
                 LOGGER.debug(f"Initializing web3 for chain {chain_id}")
                 w3 = Web3(provider)
                 w3.middleware_onion.clear()
-                start_block = w3.eth.block_number if self.start_block == 'latest' else self.start_block
-                self.latest_scanned_blocks[chain_id] = start_block
-                LOGGER.debug(
-                    f"Latest block on chain {chain_id}: {self.latest_scanned_blocks[chain_id]}"
-                )
             self._subscribers = _get_subscribers(bot=self.bot, subscribers=self._subscribers_data)
             self.bot.loop.create_task(self.process_queue())
             self.bot.loop.create_task(self.initialize_check_web3_events_thread())
@@ -144,8 +136,8 @@ class QuirkBot(commands.Cog):
 
     async def fetch_events(self, event_container: EventContainer, start_block: int, batch_size: int) -> None:
         LOGGER.info(f"Fetching events for {event_container.name}|{event_container.address[:8]}")
-        async with self.lock:
-            # Lock to prevent simultaneous scans
+        async with event_container.lock:
+            # Lock to prevent simultaneous scans of the same event type, block range, and chain
             try:
                 latest_block = event_container.w3.eth.block_number
                 end_block = min(start_block + batch_size, latest_block)
@@ -154,14 +146,14 @@ class QuirkBot(commands.Cog):
                 if end_block <= start_block:
                     return
 
-                LOGGER.info(f"Fetching events from {start_block} to {end_block}")
+                LOGGER.debug(f"Fetching from block {start_block} to {end_block} for event: {event_container.name}")
                 events = event_container.get_logs(fromBlock=start_block, toBlock=end_block)
                 num_new_events = len(events)
                 if num_new_events > 0:
                     LOGGER.info(f"Found {num_new_events} new events")
                     await self.handle_events(events=events)
 
-                self.latest_scanned_blocks[event_container.w3.eth.chain_id] = end_block
+                event_container.latest_scanned_block = end_block
                 self.events_processed += num_new_events
             except Exception as e:
                 LOGGER.error(f"Error in check_web3_events: {e}")
@@ -172,6 +164,7 @@ class QuirkBot(commands.Cog):
             for subscriber in self._subscribers:
                 task = send_event_message(subscriber, event)
                 self.task_queue.put_nowait(task)
+                LOGGER.debug(f"Adding task for event: {event} at block: {event.block_number}")
 
     @tasks.loop(seconds=defaults.LOOP_INTERVAL)
     async def check_web3_events(self):
@@ -180,7 +173,7 @@ class QuirkBot(commands.Cog):
             for event_container in self.events:  # Iterate over all event types
                 LOGGER.debug(f"Scanning {event_container.name}|{event_container.address[:8]}")
                 # Identify the starting block for scanning based on the last scanned block
-                start_block = self.latest_scanned_blocks[event_container.w3.eth.chain_id] + 1
+                start_block = event_container.latest_scanned_block + 1
                 latest_block = event_container.w3.eth.block_number
 
                 # Batch fetching logic

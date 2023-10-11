@@ -1,5 +1,7 @@
+import asyncio
 import datetime
-from typing import Dict, Set, List
+from collections import defaultdict
+from typing import Dict, List
 
 from eth_utils import keccak
 from hexbytes import HexBytes
@@ -83,6 +85,9 @@ class EventContainer:
         self.description = description
         self.color = color
 
+        self.latest_scanned_block = w3_type.w3.eth.block_number
+        self.lock = asyncio.Lock()
+
     def get_logs(self, *args, **kwargs) -> List[Event]:
         event_data = self._type.get_logs(*args, **kwargs)
         events = []
@@ -137,7 +142,7 @@ def log_event(event_instance):
 
 def _load_web3_event_types(
     config: Dict, providers: Dict[int, HTTPProvider]
-) -> Set[EventContainer]:
+) -> List[EventContainer]:
     events = list()
     for event in config["contracts"]:
         contract_address = event["address"]
