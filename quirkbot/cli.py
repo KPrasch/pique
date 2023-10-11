@@ -29,20 +29,24 @@ def quirkbot(config_file: str):
         LOGGER.info(f"Limited intents to {intents}")
 
         # Load configuration
-        path = Path(config_file)
-        config = load_config(path)
-        quirk = config["quirk"]
-        command_prefix = quirk["command_prefix"]
-        LOGGER.info(f"Loaded configuration {path.absolute()}.")
+        try:
+            path = Path(config_file)
+            config = load_config(path)
+            quirk = config["quirk"]
+            token = config["quirk"]["discord"]
+            command_prefix = quirk["command_prefix"]
+            LOGGER.info(f"Loaded configuration {path.absolute()}.")
+        except KeyError as e:
+            message = "missing required key in configuration file: (quirk|web3|bot|events)."
+            LOGGER.error(message)
+            raise e
 
         # Create bot instance
         bot = commands.Bot(command_prefix=command_prefix, intents=intents)
         await bot.add_cog(QuirkBot.from_config(config=config, bot=bot))
-        LOGGER.info(f"Added cog to bot.")
+        LOGGER.debug(f"Starting Bot...")
+        await bot.start(token)
 
-        await bot.start(config["quirk"]["discord"])
-
-    LOGGER.info("Starting Up...")
     asyncio.run(main())
 
 
