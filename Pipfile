@@ -9,6 +9,7 @@ discord = {py = "*"}
 pyyaml = "*"
 python-dotenv = "*"
 click = "*"
+jinja2 = "*"
 
 [dev-packages]
 pytest = "*"
