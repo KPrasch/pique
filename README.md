@@ -1,79 +1,36 @@
-# Quirk 🤨 - *Listen to Ethereum. Speak Discord.*
+# Quirk 🤨
 
-Quirk is the bot that bridges the Ethereum universe with Discord. If Ethereum sneezes, you get a tissue on Discord. It's that simple. No fluff, no jargon, just quirk.
+Quirk syncs Ethereum events right into your Discord channels. No fuss, all function.
 
-## 🛠 Quirk Configuration 101
+## 🛠 Setup
 
-**Quirk up your YAML file** like this example below. Save it as \`quirk.yml\`.
+  1. Create a quirk.yml file.
+  2. Configure your bot using the YAML file.
+  3. Add your bot token, Infura API key, and other configuration details to a .env file.
 
-```yaml
-name: "Relay Name"
-bot:
-  token: "{{ YOUR_DISCORD_BOT_TOKEN }}"
-  prefix: '!'
-  subscribers:
-    - name: "SubscriberName"
-      channel_id: "{{ DISCORD_CHANNEL_ID }}"
-      description: "Channel to Wake Up When Ethereum Sings"
+## 🤖 Running a Quirk Bot
 
-web3_endpoints:
-  infura: "{{ YOUR_INFURA_API_KEY }}"
-
-publishers:
-  - address: "0xYourEthereumAddressHere"
-    name: "CoolEvent"
-    description: "Explains Itself, Really"
-    chain_id: 137
-    abi_file: './abis/yourABI.json'
-    events:
-      - EventName1
-      - EventName2
-```
-
-_Quirk is opinionated but highly customizable._
-
----
-
-## 🏃‍♀️ Running Quirk: Just Do It
-
-Make sure your directory looks like this:
-
-```
-project_root
-    ├── abis
-    │    └── yourABI.json
-    └── quirk.yml
-```
-
-**Step 2**: To get Quirk on its feet, run:
+Place quirk.yml in the project root and then execute the following Docker command:
 
 ```bash
 docker run --name quirk --detach --rm -v $(pwd):/app kprasch/quirk:latest
 ```
-_Quirk is now eavesdropping on Ethereum for you._
 
----
+## 📜 Logs
 
-## 📜 Debugging or Stalking Quirk
+Monitor Quirk's activities using Docker logs.
 
-To see what Quirk is up to:
-
-```bash
+```
 docker logs -f quirk
 ```
-_Quirk doesn't mind, it has nothing to hide._
 
----
+## 🔨 Build
 
-## 🔨 Dockerize the Quirkiness
+Build the Docker image from the project root.
 
-**Step 1**: Open your trusty terminal and move to the project's root. Then build the Docker image like this:
 
 ```bash
 docker build -t kprasch/quirk:latest .
 ```
-_Because Quirk is cool, but a Dockerized Quirk is cooler._
 
----
-
-There you have it! An event bot that's as simple to set up as making instant noodles 🍜.
+That's it! 🍜
