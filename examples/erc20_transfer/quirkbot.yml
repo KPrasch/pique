@@ -1,8 +1,8 @@
 quirk:
   name: "ERC20 Transfer Scanner"
   env: "./.env"
-  batch_size: 50  # events
-  loop_interval: 30  # seconds
+  batch_size: 200  # events
+  loop_interval: 180  # seconds
 
 web3:
   infura: "{{ INFURA_API_KEY }}"

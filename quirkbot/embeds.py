@@ -5,10 +5,18 @@ from discord import Embed
 from quirkbot.networks import NETWORKS
 
 
-def pretty_format_blocks(latest_scanned_blocks, networks=NETWORKS):
+def _get_name(chain_id: int) -> str:
+    chain_data = NETWORKS.get(chain_id)
+    if chain_data:
+        return chain_data.get('name', "Unknown Chain")
+    else:
+        return f"Unknown Chain ({chain_id})"
+
+
+def pretty_format_blocks(latest_scanned_blocks):
     formatted_blocks = [
-        f"{networks.get(network_id, network_id)}: {block_number}"
-        for network_id, block_number in latest_scanned_blocks.items()
+        f"{_get_name(chain_id)}: {block_number}"
+        for chain_id, block_number in latest_scanned_blocks.items()
     ]
     return ", ".join(formatted_blocks)
 
