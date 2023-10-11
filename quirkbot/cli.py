@@ -19,7 +19,17 @@ from quirkbot.log import LOGGER
     type=click.Path(exists=True),
     help="Path to the YAML configuration file",
 )
-def quirkbot(config_file: str):
+@click.option(
+    "--log-level",
+    required=False,
+    default=defaults.DEFAULT_LOG_LEVEL,
+    type=click.Choice(["debug", "info", "warning", "error", "critical"]),
+    help="Logging level",
+)
+def quirkbot(config_file: str, log_level: str):
+    # set logging level
+    LOGGER.setLevel(log_level.upper())
+
     async def main():
 
         # Set up Discord bot intents

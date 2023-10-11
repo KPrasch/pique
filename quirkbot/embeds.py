@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from discord import Embed
 
+from quirkbot.log import LOGGER
 from quirkbot.networks import NETWORKS
 
 
