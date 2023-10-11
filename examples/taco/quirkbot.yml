@@ -1,0 +1,52 @@
+quirk:
+  name: "DKG Event Scanner"
+  env: "./.env"
+  batch_size: 500  # events
+  loop_interval: 120  # seconds
+
+web3:
+  infura: "{{ INFURA_API_KEY }}"
+
+bot:
+  token: "{{ DISCORD_BOT_TOKEN }}"
+  prefix: '!'
+  subscribers:
+    - name: "QuirkBot Test Server"
+      channel_id: "{{ SUBSCRIBER_CHANNEL_ID }}"
+      description: "Test discord server description"
+
+events:
+
+  # Lynx
+  - address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
+    name: "Coordinator"
+    description: "Lynx Domain DKG"
+    chain_id: 137
+    color: 000000
+    abi_file: './abis/Coordinator.json'
+    events:
+      - StartRitual
+      - EndRitual
+      # - StartAggregationRound
+      # - TranscriptPosted
+      # - AggregationPosted
+      # - TimeoutChanged
+      # - MaxDkgSizeChanged
+      # - ParticipantPublicKeySet
+
+   #   Tapir
+  - address: "0x8E49989F9D3aD89c8ab0de21FbA2E00C67ca872F"
+    name: "Coordinator"
+    description: "Tapir Domain DKG"
+    color: 000000
+    chain_id: 137
+    abi_file: './abis/Coordinator.json'
+    events:
+      - StartRitual
+      - EndRitual
+      # - StartAggregationRound
+      # - TranscriptPosted
+      # - AggregationPosted
+      # - TimeoutChanged
+      # - MaxDkgSizeChanged
+      # - ParticipantPublicKeySet

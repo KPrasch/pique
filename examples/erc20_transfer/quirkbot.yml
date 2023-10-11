@@ -1,0 +1,26 @@
+quirk:
+  name: "ERC20 Transfer Scanner"
+  env: "./.env"
+  batch_size: 50  # events
+  loop_interval: 30  # seconds
+
+web3:
+  infura: "{{ INFURA_API_KEY }}"
+
+bot:
+  token: "{{ DISCORD_BOT_TOKEN }}"
+  prefix: '!'
+  subscribers:
+    - name: "QuirkBot Test Server"
+      channel_id: "{{ SUBSCRIBER_CHANNEL_ID }}"
+      description: "Test discord server description"
+
+events:
+  - address: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    description: "Mainnet DAI Transferred"
+    name: "DAI"
+    color: 000000
+    chain_id: 1
+    abi_file: './abis/ERC20-Transfer.json'
+    events:
+      - Transfer
