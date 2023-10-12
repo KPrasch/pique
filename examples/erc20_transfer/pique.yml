@@ -14,13 +14,14 @@ contracts:
   infura: "{{ INFURA_API_KEY }}"
   etherscan: "{{ ETHERSCAN_API_KEY }}"
   batch_size: 200  # blocks
-  loop_interval: 180  # seconds
+  loop_interval: 20  # seconds
   track:
     - name: "DAI"
       address: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
       description: "Mainnet DAI Transferred"
       color: 000000
       chain_id: 1
+      abi_file: './abis/ERC20-Transfer.json'
       status: true
       events:
         - Transfer
