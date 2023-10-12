@@ -16,7 +16,9 @@ class DiscordSubscriberDict(TypedDict):
 class DiscordSubscriber(Subscriber):
     _NAME = "discord"
 
-    def __init__(self, channel_id: int, channel: Optional[TextChannel] = None, *args, **kwargs):
+    def __init__(
+        self, channel_id: int, channel: Optional[TextChannel] = None, *args, **kwargs
+    ):
         self.channel = channel
         self.channel_id = int(channel_id)
         self._type = self._NAME

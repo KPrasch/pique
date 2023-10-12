@@ -1,16 +1,11 @@
 import datetime
-from typing import Dict
 
 import discord
 from discord.ext import commands
-from web3 import Web3
 
-from pique._utils import get_infura_url
-from pique.constants import defaults
 from pique.discord.embeds import make_status_embed
 from pique.discord.subscriber import DiscordSubscriber
 from pique.log import LOGGER
-from pique.scanner.events import _load_config_events
 from pique.scanner.scanner import EventScanner
 from pique.subscriptions import SubscriptionManager
 
@@ -61,55 +56,6 @@ class PiqueBot(commands.Cog):
             return "Bot is not active"
         else:
             return datetime.datetime.now() - self.start_time
-
-    @classmethod
-    def from_config(cls, config: Dict, bot):
-        try:
-
-            # required top-level keys
-            pique_config = config["pique"]
-            contracts_config = config["contracts"]
-            contracts = contracts_config["track"]
-
-            # required nested keys
-            name = pique_config["name"]
-            infura_api_key = contracts_config["infura"]
-            chain_ids = {contract["chain_id"] for contract in contracts}
-
-        except KeyError as e:
-            message = "missing required key in configuration file."
-            LOGGER.error(message)
-            raise e
-
-        # optional fields
-        batch_size = contracts_config.get("batch_size", defaults.BATCH_SIZE)
-        loop_interval = contracts_config.get("loop_interval", defaults.LOOP_INTERVAL)
-        start_block = contracts_config.get("start_block", defaults.START_BLOCK)
-
-        # prepare event scanner
-        providers = {cid: Web3.HTTPProvider(get_infura_url(cid, infura_api_key)) for cid in chain_ids}
-        events = _load_config_events(contracts, providers=providers)
-        scanner = EventScanner(
-            events=events,
-            providers=providers,
-            batch_size=batch_size,
-            start_block=start_block,
-            loop_interval=loop_interval,
-        )
-
-        LOGGER.debug(f"Loaded {len(events)} events")
-        subscription_manager = SubscriptionManager.from_config(
-            config=config,
-            event_queue=scanner.queue,
-        )
-
-        instance = cls(
-            bot=bot,
-            name=name,
-            event_scanner=scanner,
-            subscription_manager=subscription_manager,
-        )
-        return instance
 
     @commands.command()
     async def status(self, ctx):

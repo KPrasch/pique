@@ -1,8 +1,8 @@
 from collections import defaultdict
 
 from discord import Embed
-from pique.constants.networks import NETWORKS
 
+from pique.constants.networks import NETWORKS
 from pique.log import LOGGER
 
 
@@ -18,7 +18,7 @@ def _etherscan_link(network, explorer, path, text):
 def _get_name(chain_id: int) -> str:
     chain_data = NETWORKS.get(chain_id)
     if chain_data:
-        return chain_data.get('name', "Unknown Chain")
+        return chain_data.get("name", "Unknown Chain")
     else:
         return f"Unknown Chain ({chain_id})"
 
@@ -37,18 +37,16 @@ def add_event_args_fields(embed, event):
 
 
 def format_uptime(raw_uptime):
-    return (f"{raw_uptime.days}D "
-            f"{raw_uptime.seconds // 3600}H "
-            f"{(raw_uptime.seconds // 60) % 60}M "
-            f"{raw_uptime.seconds % 60}S")
+    return (
+        f"{raw_uptime.days}D "
+        f"{raw_uptime.seconds // 3600}H "
+        f"{(raw_uptime.seconds // 60) % 60}M "
+        f"{raw_uptime.seconds % 60}S"
+    )
 
 
 async def make_status_embed(w3c, ctx):
-    embed = Embed(
-        title=f"{w3c.name} Status",
-        color=000000,
-        description=""
-    )
+    embed = Embed(title=f"{w3c.name} Status", color=000000, description="")
 
     embed.add_field(name="Processed", value=w3c.events_processed, inline=True)
     embed.add_field(name="Subscribers", value=len(w3c._subscribers), inline=True)
@@ -81,9 +79,9 @@ async def make_status_embed(w3c, ctx):
 
 
 def get_field_values(event, base_url):
-    contract_address_link = _etherscan_link(event.contract_address, 'address', base_url)
-    transaction_hash_link = _etherscan_link(event.tx_hash.hex(), 'tx', base_url)
-    block_number_link = _etherscan_link(event.block_number, 'block', base_url)
+    contract_address_link = _etherscan_link(event.contract_address, "address", base_url)
+    transaction_hash_link = _etherscan_link(event.tx_hash.hex(), "tx", base_url)
+    block_number_link = _etherscan_link(event.block_number, "block", base_url)
 
     return {
         "Contract Address": (contract_address_link, False),
@@ -96,22 +94,13 @@ def get_field_values(event, base_url):
 
 def add_predefined_fields(embed, event, network, explorer):
     contract_link = _etherscan_link(
-        network,
-        explorer,
-        f"address/{event.contract_address}",
-        event.contract_address
+        network, explorer, f"address/{event.contract_address}", event.contract_address
     )
     tx_link = _etherscan_link(
-        network,
-        explorer,
-        f"tx/{event.tx_hash.hex()}",
-        event.tx_hash.hex()
+        network, explorer, f"tx/{event.tx_hash.hex()}", event.tx_hash.hex()
     )
     block_link = _etherscan_link(
-        network,
-        explorer,
-        f"block/{event.block_number}",
-        str(event.block_number)
+        network, explorer, f"block/{event.block_number}", str(event.block_number)
     )
     embed.add_field(name="Contract Address", value=contract_link, inline=False)
     embed.add_field(name="Transaction Hash", value=tx_link, inline=False)
@@ -120,7 +109,7 @@ def add_predefined_fields(embed, event, network, explorer):
     embed.add_field(name="Log Index", value=str(event.log_index), inline=True)
 
 
-def create_event_embed(event: 'Event'):
+def create_event_embed(event: "Event"):
     network, explorer = NETWORKS[event.chain_id]
 
     embed = Embed(

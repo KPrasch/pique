@@ -7,8 +7,8 @@ from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
 
-from pique.constants import defaults
 from pique._utils import _read_abi
+from pique.constants import defaults
 from pique.log import LOGGER
 
 
@@ -65,19 +65,14 @@ class Event:
             contract_address=_dict["address"],
             block_hash=_dict["blockHash"],
             block_number=_dict["blockNumber"],
-            args=_dict.get('args', {}),  # TODO: use custom arg parser
-            *args, **kwargs
+            args=_dict.get("args", {}),  # TODO: use custom arg parser
+            *args,
+            **kwargs,
         )
 
 
 class EventContainer:
-    def __init__(
-            self,
-            w3_type,
-            contract_name: str,
-            description: str,
-            color: int
-    ):
+    def __init__(self, w3_type, contract_name: str, description: str, color: int):
         self._type = w3_type
         self.contract_name = contract_name
         self.description = description
@@ -95,7 +90,7 @@ class EventContainer:
                 description=self.description,
                 chain_id=self.chain_id,
                 color=self.color,
-                contract_name=self.contract_name
+                contract_name=self.contract_name,
             )
             events.append(event)
         return events
@@ -143,7 +138,6 @@ def _load_config_events(
 ) -> List[EventContainer]:
     events = list()
     for contract in contracts:
-
         # Read contract data from config
         contract_address = contract["address"]
         contract_name = contract["name"]

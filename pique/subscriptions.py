@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from asyncio import Queue
 from typing import List
 
+from pique.config import PiqueConfig
 from pique.log import LOGGER
 
 
@@ -23,12 +24,15 @@ class SubscriptionManager:
         self.subscribers = subscribers
 
     @classmethod
-    def from_config(cls, event_queue: Queue, config: dict) -> "SubscriptionManager":
+    def from_config(
+        cls, event_queue: Queue, config: PiqueConfig
+    ) -> "SubscriptionManager":
         subscribers_data, subscribers = list(), list()
-        discord_subscribers_data = config["discord"]["subscribers"]
+        discord_subscribers_data = config.discord["subscribers"]
         subscribers_data.extend(discord_subscribers_data)
         for subscriber_data in subscribers_data:
             from pique.discord.subscriber import DiscordSubscriber
+
             subscriber = DiscordSubscriber.from_config(subscriber_data)
             subscribers.append(subscriber)
         return cls(event_queue=event_queue, subscribers=subscribers)
@@ -37,9 +41,13 @@ class SubscriptionManager:
         try:
             LOGGER.debug(f"Sending event #{event.id[:8]} to subscribers")
             for subscriber in self.subscribers:
-                LOGGER.debug(f"Sending event #{event.id[:8]} to subscriber {subscriber.name}")
+                LOGGER.debug(
+                    f"Sending event #{event.id[:8]} to subscriber {subscriber.name}"
+                )
                 await subscriber.notify(event)
-                LOGGER.info(f"Sent event #{event.id[:8]} to subscriber {subscriber.name}")
+                LOGGER.info(
+                    f"Sent event #{event.id[:8]} to subscriber {subscriber.name}"
+                )
         except Exception as e:
             LOGGER.error(f"Error in notify: {e}")
 
