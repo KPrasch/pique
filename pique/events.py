@@ -140,19 +140,23 @@ def log_event(event_instance):
     LOGGER.debug(humanize_event(event_instance))
 
 
-def _load_web3_event_types(
-    config: Dict, providers: Dict[int, HTTPProvider]
+def _load_config_events(
+    contracts, providers: Dict[int, HTTPProvider]
 ) -> List[EventContainer]:
     events = list()
-    for event in config["contracts"]:
-        contract_address = event["address"]
-        contract_name = event["name"]
-        event_names = event["events"]
-        chain_id = event["chain_id"]
-        abi_filepath = event["abi_file"]
-        description = event.get("description", "")
-        color = event.get("color", defaults.EMBED_COLOR)
+    for contract in contracts:
+
+        # Read contract data from config
+        contract_address = contract["address"]
+        contract_name = contract["name"]
+        event_names = contract["events"]
+        chain_id = contract["chain_id"]
+        abi_filepath = contract["abi_file"]
+        description = contract.get("description", "")
+        color = contract.get("color", defaults.EMBED_COLOR)
         event_abi = _read_abi(abi_filepath)
+
+        # Create web3 instance and event container
         w3 = Web3(providers[chain_id])
         for name in event_names:
             contract = w3.eth.contract(address=contract_address, abi=event_abi)

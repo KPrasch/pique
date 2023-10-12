@@ -1,1 +1,0 @@
-pique --log-level info

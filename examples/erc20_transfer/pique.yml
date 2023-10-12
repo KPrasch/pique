@@ -1,10 +1,9 @@
 pique:
   name: "ERC20 Transfer Scanner"
   env: "./.env"
-  batch_size: 200  # events
-  loop_interval: 180  # seconds
-  infura: "{{ INFURA_API_KEY }}"
-  discord: "{{ DISCORD_BOT_TOKEN }}"
+
+discord:
+  token: "{{ DISCORD_BOT_TOKEN }}"
   command_prefix: '!'
   subscribers:
     - name: "PiqueBot Test Server"
@@ -12,11 +11,16 @@ pique:
       description: "Test discord server description"
 
 contracts:
-  - name: "DAI"
-    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-    description: "Mainnet DAI Transferred"
-    color: 000000
-    chain_id: 1
-    abi_file: './abis/ERC20-Transfer.json'
-    events:
-      - Transfer
+  infura: "{{ INFURA_API_KEY }}"
+  etherscan: "{{ ETHERSCAN_API_KEY }}"
+  batch_size: 200  # blocks
+  loop_interval: 180  # seconds
+  track:
+    - name: "DAI"
+      address: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      description: "Mainnet DAI Transferred"
+      color: 000000
+      chain_id: 1
+      status: true
+      events:
+        - Transfer

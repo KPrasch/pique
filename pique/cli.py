@@ -2,8 +2,8 @@ import asyncio
 from pathlib import Path
 
 import click
-import discord
 from discord.ext import commands
+import discord as _discord
 
 from pique import defaults
 from pique.bot import PiqueBot
@@ -33,7 +33,7 @@ def pique(config_file: str, log_level: str):
     async def main():
 
         # Set up Discord bot intents
-        intents = discord.Intents.default()
+        intents = _discord.Intents.default()
         intents.typing = True
         intents.messages = True
         LOGGER.info(f"Limited intents to {intents}")
@@ -42,9 +42,9 @@ def pique(config_file: str, log_level: str):
         try:
             path = Path(config_file)
             config = load_config(path)
-            pique = config["pique"]
-            token = config["pique"]["discord"]
-            command_prefix = pique["command_prefix"]
+            discord = config["discord"]
+            token = discord["token"]
+            command_prefix = discord["command_prefix"]
             LOGGER.info(f"Loaded configuration {path.absolute()}.")
         except KeyError as e:
             message = "missing required key in configuration file: (pique|web3|bot|events)."

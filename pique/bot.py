@@ -12,8 +12,9 @@ from pique._utils import get_infura_url
 from pique.embeds import make_status_embed
 from pique.events import (
     EventContainer,
-    _load_web3_event_types,
-    send_event_message, Event
+    _load_config_events,
+    send_event_message,
+    Event
 )
 from pique.log import LOGGER
 from pique.subscribers import _get_subscribers, Subscriber
@@ -82,30 +83,33 @@ class PiqueBot(commands.Cog):
         try:
 
             # required top-level keys
-            pique = config["pique"]
-            contracts = config["contracts"]
+            pique_config = config["pique"]
+            contracts_config = config["contracts"]
+            contracts = contracts_config["track"]
+            discord_config = config["discord"]
 
             # required nested keys
-            name = pique["name"]
-            infura_api_key = pique["infura"]
+            name = pique_config["name"]
+            infura_api_key = contracts_config["infura"]
             chain_ids = {contract["chain_id"] for contract in contracts}
-            subscribers_data = pique["subscribers"]
+            subscribers_data = discord_config["subscribers"]
 
         except KeyError as e:
-            message = "missing required key in configuration file: (pique|web3|bot|events)."
+            message = "missing required key in configuration file."
             LOGGER.error(message)
             raise e
 
         # optional fields
-        batch_size = pique.get("batch_size", defaults.BATCH_SIZE)
-        loop_interval = pique.get("loop_interval", defaults.LOOP_INTERVAL)
-        start_block = pique.get("start_block", defaults.START_BLOCK)
+        batch_size = contracts_config.get("batch_size", defaults.BATCH_SIZE)
+        loop_interval = contracts_config.get("loop_interval", defaults.LOOP_INTERVAL)
+        start_block = contracts_config.get("start_block", defaults.START_BLOCK)
 
         providers = {
             cid: Web3.HTTPProvider(get_infura_url(cid, infura_api_key))
             for cid in chain_ids
         }
-        events = _load_web3_event_types(config, providers=providers)
+        events = _load_config_events(contracts, providers=providers)
+
         instance = cls(
             bot=bot,
             name=name,
