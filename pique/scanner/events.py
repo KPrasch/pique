@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-from collections import defaultdict
 from typing import Dict, List
 
 from eth_utils import keccak
@@ -8,9 +7,8 @@ from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
 
-from pique import defaults
+from pique.constants import defaults
 from pique._utils import _read_abi
-from pique.embeds import create_event_embed
 from pique.log import LOGGER
 
 
@@ -169,9 +167,3 @@ def _load_config_events(
 
             events.append(event_container)
     return events
-
-
-async def send_event_message(subscriber, event):
-    LOGGER.info(f"Sending event #{event.id[:8]} to channel #{subscriber.channel_id}")
-    embed = create_event_embed(event)
-    await subscriber.channel.send(embed=embed)

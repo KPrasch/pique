@@ -2,8 +2,9 @@ import asyncio
 from asyncio import Queue
 from typing import List
 
-from pique.events import EventContainer, Event
+from pique.discord.tasks import send_event_message
 from pique.log import LOGGER
+from pique.scanner.events import EventContainer, Event
 
 
 class EventScanner:

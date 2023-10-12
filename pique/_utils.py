@@ -2,8 +2,7 @@ import json
 from contextlib import asynccontextmanager
 
 from cytoolz import memoize
-
-from pique.networks import NETWORKS
+from pique.constants.networks import NETWORKS
 
 
 @memoize

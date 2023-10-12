@@ -2,11 +2,11 @@ import asyncio
 from pathlib import Path
 
 import click
-from discord.ext import commands
 import discord as _discord
+from discord.ext import commands
+from pique.discord.bot import PiqueBot
 
-from pique import defaults
-from pique.bot import PiqueBot
+from pique.constants import defaults
 from pique.config import load_config
 from pique.log import LOGGER
 

@@ -1,9 +1,9 @@
 from collections import defaultdict
 
 from discord import Embed
+from pique.constants.networks import NETWORKS
 
 from pique.log import LOGGER
-from pique.networks import NETWORKS
 
 
 def _inline_code(text):

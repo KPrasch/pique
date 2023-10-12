@@ -1,6 +1,6 @@
 from pique.discord.embeds import create_event_embed
 from pique.log import LOGGER
-from pique.subscribers import Subscriber
+from pique.subscribers.subscribers import Subscriber
 
 
 class DiscordSubscriber(Subscriber):

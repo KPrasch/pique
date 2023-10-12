@@ -5,7 +5,7 @@ import yaml
 from dotenv import load_dotenv
 from jinja2 import Template
 
-from pique import defaults
+from pique.constants import defaults
 from pique._utils import _read_file
 
 

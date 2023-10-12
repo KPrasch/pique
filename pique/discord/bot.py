@@ -5,19 +5,21 @@ from typing import Dict, List
 
 from discord.ext import commands
 from discord.ext import tasks
-from web3 import Web3, HTTPProvider
-
-from pique import defaults
-from pique._utils import get_infura_url
-from pique.embeds import make_status_embed
-from pique.events import (
+from pique.discord.embeds import make_status_embed
+from pique.scanner.events import (
     EventContainer,
     _load_config_events,
-    send_event_message,
     Event
 )
+from web3 import Web3, HTTPProvider
+
+from pique.constants import defaults
+from pique._utils import get_infura_url
 from pique.log import LOGGER
-from pique.subscribers import _get_subscribers, Subscriber
+from pique.subscribers.subscribers import (
+    _get_subscribers,
+    Subscriber
+)
 
 
 class PiqueBot(commands.Cog):
