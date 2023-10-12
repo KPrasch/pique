@@ -82,6 +82,9 @@ def pique(config_file: str, log_level: str):
             subscription_manager=subscription_manager,
         )
 
+        scanner.start()
+        subscription_manager.start()
+        
         await bot.add_cog(_pique)
         LOGGER.debug(f"Starting Bot...")
         await bot.start(token)

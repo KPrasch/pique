@@ -28,27 +28,21 @@ class PiqueBot(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         try:
-            LOGGER.debug(f"Starting {self.name} services...")
-            self._load_discord_subscribers()
-            self.scanner.start()
-            self.subscription_manager.start()
+            self._connect_subscriber_channels()
             LOGGER.info(f"Bot is active!")
         except Exception as e:
             LOGGER.error(f"Error in on_ready: {e}")
 
-    def _get_channel(self, channel_id: int) -> discord.TextChannel:
-        channel = self.bot.get_channel(channel_id)
-        if channel:
-            LOGGER.info(f"Found channel {channel.name} with ID {channel.id}")
-            return channel
-        message = f"Could not find channel with ID {channel_id}"
-        LOGGER.error(message)
-
-    def _load_discord_subscribers(self):
+    def _connect_subscriber_channels(self):
         for subscriber in self.subscription_manager.subscribers:
-            if subscriber._type != DiscordSubscriber._NAME:
+            if not isinstance(subscriber, DiscordSubscriber):
                 continue
-            subscriber.channel = self._get_channel(subscriber.channel_id)
+            channel = self.bot.get_channel(subscriber.channel_id)
+            if not channel:
+                LOGGER.error(f"Could not find channel with ID {subscriber.channel_id}")
+                continue
+            LOGGER.info(f"Found channel {channel.name} with ID {channel.id}")
+            subscriber.channel = channel
 
     @property
     def uptime(self):

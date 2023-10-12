@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import NamedTuple, Set, Dict
+from typing import NamedTuple, Set, Dict, List
 
 import yaml
 from dotenv import load_dotenv
@@ -10,7 +10,7 @@ from web3 import Web3
 from pique._utils import _read_file, get_infura_url
 from pique.constants import defaults
 from pique.log import LOGGER
-from pique.scanner.events import _load_config_events
+from pique.scanner.events import _load_config_events, EventContainer
 
 
 def _load_partial_config(path: Path) -> dict:
@@ -52,7 +52,7 @@ class PiqueConfig(NamedTuple):
     start_block: int
     contracts: list
     discord: dict
-    events: dict
+    events: List[EventContainer]
     providers: Dict[int, Web3.HTTPProvider]
 
     @classmethod

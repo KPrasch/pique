@@ -18,7 +18,7 @@ class Subscriber(ABC):
 
 
 class SubscriptionManager:
-    def __init__(self, event_queue: Queue, subscribers: List[Subscriber]):
+    def __init__(self, event_queue: Queue, subscribers: List['DiscordSubscriber']):
         self.subscriptions = {}
         self.event_queue = event_queue
         self.subscribers = subscribers
@@ -41,13 +41,7 @@ class SubscriptionManager:
         try:
             LOGGER.debug(f"Sending event #{event.id[:8]} to subscribers")
             for subscriber in self.subscribers:
-                LOGGER.debug(
-                    f"Sending event #{event.id[:8]} to subscriber {subscriber.name}"
-                )
                 await subscriber.notify(event)
-                LOGGER.info(
-                    f"Sent event #{event.id[:8]} to subscriber {subscriber.name}"
-                )
         except Exception as e:
             LOGGER.error(f"Error in notify: {e}")
 
