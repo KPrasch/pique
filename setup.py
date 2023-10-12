@@ -11,18 +11,18 @@ with open('dev-requirements.txt') as f:
     dev_requirements = [r for r in dev_requirements if not r.startswith('#')]
 
 setup(
-    name='quirkbot',
+    name='pique',
     version='0.1.0',
-    url='https://github.com/KPrasch/quirkbot',
+    url='https://github.com/KPrasch/pique',
     author='Kieran Prasch',
     author_email='kieranprasch@gmail.com',
     description='A [discord] bot for relaying Web3 events',
     packages=find_packages(),
     install_requires=requirements,
-    py_modules=['quirkbot'],
+    py_modules=['pique'],
     entry_points={
         'console_scripts': [
-            'quirkbot = quirkbot.cli:quirkbot',
+            'pique = pique.cli:pique',
         ]
     },
     extras_require={

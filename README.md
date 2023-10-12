@@ -1,27 +1,27 @@
-# Quirk 🤨
+# Pique 🤨
 
-Quirk syncs Ethereum events right into your Discord channels. No fuss, all function.
+Pique syncs Ethereum events right into your Discord channels. No fuss, all function.
 
 ## 🛠 Setup
 
-  1. Create a quirk.yml file.
+  1. Create a pique.yml file.
   2. Configure your bot using the YAML file.
   3. Add your bot token, Infura API key, and other configuration details to a .env file.
 
-## 🤖 Running a Quirk Bot
+## 🤖 Running a Pique Bot
 
-Place quirk.yml in the project root and then execute the following Docker command:
+Place pique.yml in the project root and then execute the following Docker command:
 
 ```bash
-docker run --name quirk --detach --rm -v $(pwd):/app kprasch/quirk:latest
+docker run --name pique --detach --rm -v $(pwd):/app kprasch/pique:latest
 ```
 
 ## 📜 Logs
 
-Monitor Quirk's activities using Docker logs.
+Monitor Pique's activities using Docker logs.
 
 ```
-docker logs -f quirk
+docker logs -f pique
 ```
 
 ## 🔨 Build
@@ -30,7 +30,7 @@ Build the Docker image from the project root.
 
 
 ```bash
-docker build -t kprasch/quirk:latest .
+docker build -t kprasch/pique:latest .
 ```
 
 That's it! 🍜

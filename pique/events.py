@@ -8,10 +8,10 @@ from hexbytes import HexBytes
 from web3 import Web3, HTTPProvider
 from web3.datastructures import AttributeDict
 
-from quirkbot import defaults
-from quirkbot._utils import _read_abi
-from quirkbot.embeds import create_event_embed
-from quirkbot.log import LOGGER
+from pique import defaults
+from pique._utils import _read_abi
+from pique.embeds import create_event_embed
+from pique.log import LOGGER
 
 
 class Event:

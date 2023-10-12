@@ -32,7 +32,7 @@ class CustomFormatter(Formatter):
         return formatter.format(record)
 
 
-LOGGER = getLogger("quirkbot")
+LOGGER = getLogger("pique")
 ch = StreamHandler()
 ch.setLevel(DEBUG)
 ch.setFormatter(CustomFormatter())

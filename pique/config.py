@@ -5,8 +5,8 @@ import yaml
 from dotenv import load_dotenv
 from jinja2 import Template
 
-from quirkbot import defaults
-from quirkbot._utils import _read_file
+from pique import defaults
+from pique._utils import _read_file
 
 
 def _load_partial_config(path: Path) -> dict:

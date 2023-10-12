@@ -2,8 +2,8 @@ from collections import defaultdict
 
 from discord import Embed
 
-from quirkbot.log import LOGGER
-from quirkbot.networks import NETWORKS
+from pique.log import LOGGER
+from pique.networks import NETWORKS
 
 
 def _inline_code(text):

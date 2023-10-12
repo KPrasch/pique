@@ -7,19 +7,19 @@ from discord.ext import commands
 from discord.ext import tasks
 from web3 import Web3, HTTPProvider
 
-from quirkbot import defaults
-from quirkbot._utils import get_infura_url
-from quirkbot.embeds import make_status_embed
-from quirkbot.events import (
+from pique import defaults
+from pique._utils import get_infura_url
+from pique.embeds import make_status_embed
+from pique.events import (
     EventContainer,
     _load_web3_event_types,
     send_event_message, Event
 )
-from quirkbot.log import LOGGER
-from quirkbot.subscribers import _get_subscribers, Subscriber
+from pique.log import LOGGER
+from pique.subscribers import _get_subscribers, Subscriber
 
 
-class QuirkBot(commands.Cog):
+class PiqueBot(commands.Cog):
     def __init__(
         self,
         bot,
@@ -82,24 +82,24 @@ class QuirkBot(commands.Cog):
         try:
 
             # required top-level keys
-            quirk = config["quirk"]
+            pique = config["pique"]
             contracts = config["contracts"]
 
             # required nested keys
-            name = quirk["name"]
-            infura_api_key = quirk["infura"]
+            name = pique["name"]
+            infura_api_key = pique["infura"]
             chain_ids = {contract["chain_id"] for contract in contracts}
-            subscribers_data = quirk["subscribers"]
+            subscribers_data = pique["subscribers"]
 
         except KeyError as e:
-            message = "missing required key in configuration file: (quirk|web3|bot|events)."
+            message = "missing required key in configuration file: (pique|web3|bot|events)."
             LOGGER.error(message)
             raise e
 
         # optional fields
-        batch_size = quirk.get("batch_size", defaults.BATCH_SIZE)
-        loop_interval = quirk.get("loop_interval", defaults.LOOP_INTERVAL)
-        start_block = quirk.get("start_block", defaults.START_BLOCK)
+        batch_size = pique.get("batch_size", defaults.BATCH_SIZE)
+        loop_interval = pique.get("loop_interval", defaults.LOOP_INTERVAL)
+        start_block = pique.get("start_block", defaults.START_BLOCK)
 
         providers = {
             cid: Web3.HTTPProvider(get_infura_url(cid, infura_api_key))

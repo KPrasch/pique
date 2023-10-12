@@ -5,10 +5,10 @@ import click
 import discord
 from discord.ext import commands
 
-from quirkbot import defaults
-from quirkbot.bot import QuirkBot
-from quirkbot.config import load_config
-from quirkbot.log import LOGGER
+from pique import defaults
+from pique.bot import PiqueBot
+from pique.config import load_config
+from pique.log import LOGGER
 
 
 @click.command()
@@ -26,7 +26,7 @@ from quirkbot.log import LOGGER
     type=click.Choice(["debug", "info", "warning", "error", "critical"]),
     help="Logging level",
 )
-def quirkbot(config_file: str, log_level: str):
+def pique(config_file: str, log_level: str):
     # set logging level
     LOGGER.setLevel(log_level.upper())
 
@@ -42,18 +42,18 @@ def quirkbot(config_file: str, log_level: str):
         try:
             path = Path(config_file)
             config = load_config(path)
-            quirk = config["quirk"]
-            token = config["quirk"]["discord"]
-            command_prefix = quirk["command_prefix"]
+            pique = config["pique"]
+            token = config["pique"]["discord"]
+            command_prefix = pique["command_prefix"]
             LOGGER.info(f"Loaded configuration {path.absolute()}.")
         except KeyError as e:
-            message = "missing required key in configuration file: (quirk|web3|bot|events)."
+            message = "missing required key in configuration file: (pique|web3|bot|events)."
             LOGGER.error(message)
             raise e
 
         # Create bot instance
         bot = commands.Bot(command_prefix=command_prefix, intents=intents)
-        await bot.add_cog(QuirkBot.from_config(config=config, bot=bot))
+        await bot.add_cog(PiqueBot.from_config(config=config, bot=bot))
         LOGGER.debug(f"Starting Bot...")
         await bot.start(token)
 
@@ -61,4 +61,4 @@ def quirkbot(config_file: str, log_level: str):
 
 
 if __name__ == "__main__":
-    quirkbot()
+    pique()

@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from cytoolz import memoize
 
-from quirkbot.networks import NETWORKS
+from pique.networks import NETWORKS
 
 
 @memoize

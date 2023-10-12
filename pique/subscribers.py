@@ -1,6 +1,6 @@
 from typing import TypedDict, NamedTuple, List, Optional, Any
 
-from quirkbot.log import LOGGER
+from pique.log import LOGGER
 
 
 class SubscriberDict(TypedDict):

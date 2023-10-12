@@ -1,1 +1,1 @@
-docker run -it -v .:/app kprasch/quirk:latest quirk
+docker run -it -v .:/app kprasch/pique:latest pique

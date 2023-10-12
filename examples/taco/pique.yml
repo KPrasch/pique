@@ -1,4 +1,4 @@
-quirk:
+pique:
   name: "DKG Event Scanner"
   env: "./.env"
   batch_size: 500  # events
@@ -7,7 +7,7 @@ quirk:
   discord: "{{ DISCORD_BOT_TOKEN }}"
   command_prefix: '!'
   subscribers:
-    - name: "QuirkBot Test Server"
+    - name: "PiqueBot Test Server"
       channel_id: "{{ SUBSCRIBER_CHANNEL_ID }}"
       description: "Test discord server description"
 
