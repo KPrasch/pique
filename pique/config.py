@@ -43,6 +43,25 @@ def load_config(path: Path) -> dict:
     return config_dict
 
 
+class DiscordConfig(NamedTuple):
+    token: str
+    command_prefix: str
+    subscribers: List[Dict]
+
+    @classmethod
+    def from_dict(cls, config: Dict):
+        try:
+            discord_config = config["discord"]
+            token = discord_config["token"]
+            command_prefix = discord_config["command_prefix"]
+            subscribers = discord_config["subscribers"]
+        except KeyError as e:
+            message = "missing required key in configuration file."
+            LOGGER.error(message)
+            raise e
+        return cls(token, command_prefix, subscribers)
+
+
 class PiqueConfig(NamedTuple):
     name: str
     infura_api_key: str
@@ -51,9 +70,17 @@ class PiqueConfig(NamedTuple):
     loop_interval: int
     start_block: int
     contracts: list
-    discord: dict
+    discord: DiscordConfig
     events: List[EventContainer]
     providers: Dict[int, Web3.HTTPProvider]
+
+    @classmethod
+    def from_file(cls, filepath: str):
+        path = Path(filepath)
+        config = load_config(path)
+        LOGGER.info(f"Loaded configuration {path.absolute()}.")
+        config = cls.from_dict(config)
+        return config
 
     @classmethod
     def from_dict(cls, config: Dict):
@@ -61,7 +88,7 @@ class PiqueConfig(NamedTuple):
             pique_config = config["pique"]
             contracts_config = config["contracts"]
             contracts = contracts_config["track"]
-            discord = config["discord"]
+            discord = DiscordConfig.from_dict(config)
             name = pique_config["name"]
             infura_api_key = contracts_config["infura"]
             chain_ids = {contract["chain_id"] for contract in contracts}

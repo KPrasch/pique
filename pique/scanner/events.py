@@ -55,6 +55,10 @@ class Event:
         unique_id = keccak(concatenated_data)
         return unique_id.hex()
 
+    @property
+    def name(self):
+        return self.event_type
+
     @classmethod
     def from_dict(cls, _dict: AttributeDict, *args, **kwargs) -> "Event":
         return cls(

@@ -2,6 +2,7 @@ import asyncio
 from asyncio import Queue
 from typing import List
 
+from pique.constants._tweaks import THROTTLE
 from pique.log import LOGGER
 from pique.scanner.events import EventContainer, Event
 
@@ -26,15 +27,6 @@ class EventScanner:
         while True:
             await self.check_web3_events()
             await asyncio.sleep(self.loop_interval)  # Delay for loop_interval seconds
-
-    # async def process_queue(self):
-    #     LOGGER.debug(f"Starting process_queue thread")
-    #     while True:
-    #         task = await self.task_queue.get()
-    #         LOGGER.debug(f"Processing event #{task.id[:8]}")
-    #         # await task
-    #         # self.task_queue.task_done()
-    #         # await asyncio.sleep(0.1)
 
     async def fetch_events(
         self, event_container: EventContainer, start_block: int, batch_size: int
@@ -98,7 +90,7 @@ class EventScanner:
                     f"Finished scanning {event_container.name}|{event_container.address[:8]}"
                 )
 
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(THROTTLE)
         except Exception as e:
             LOGGER.error(f"Error in check_web3_events: {e}")
 
