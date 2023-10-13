@@ -1,1 +1,1 @@
-docker run -it -v .:/app kprasch/pique:latest pique
+To execute the demo run `pique`.

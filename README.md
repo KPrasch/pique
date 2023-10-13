@@ -1,6 +1,6 @@
-# Pique 🤨
+# Pique your interest? 🤨
 
-Pique syncs Ethereum events right into your Discord channels. No fuss, all function.
+Sync Ethereum events right into your Discord channels. No fuss, all function.
 
 ## 🛠 Setup
 
@@ -13,7 +13,7 @@ Pique syncs Ethereum events right into your Discord channels. No fuss, all funct
 Place pique.yml in the project root and then execute the following Docker command:
 
 ```bash
-docker run --name pique --detach --rm -v $(pwd):/app kprasch/pique:latest
+docker run --name pique --detach --rm -v $(pwd):/app kprasch/pique:latest pique
 ```
 
 ## 📜 Logs
