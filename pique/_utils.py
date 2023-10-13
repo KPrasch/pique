@@ -46,3 +46,29 @@ def decode_event_input(event_signature, log_data, contract_abi, contract):
         return None
 
     return contract.events[event_signature]().processLog({"data": log_data})
+
+
+def bytes_to_hex(output, output_types):
+    if isinstance(output, list):
+        raise NotImplementedError("List output types not supported yet")
+    elif isinstance(output, bytes):
+        return output.hex()
+    else:
+        return output
+
+
+def find_read_functions_without_input(abi):
+    read_functions = {}
+    for item in abi:
+        if item['type'] == 'function':
+            is_view = item.get('stateMutability') == 'view'
+            is_pure = item.get('stateMutability') == 'pure'
+            is_constant = item.get('constant', False)
+
+            # Check if function is read-only
+            if is_view or is_pure or is_constant:
+                inputs = item['inputs']
+                if len(inputs) == 0:
+                    read_functions[item['name']] = item
+
+    return read_functions

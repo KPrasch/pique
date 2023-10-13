@@ -1,7 +1,9 @@
 from collections import defaultdict
 
 from discord import Embed
+from web3.contract import Contract
 
+from pique._utils import bytes_to_hex, find_read_functions_without_input
 from pique.constants.networks import NETWORKS
 from pique.log import LOGGER
 
@@ -45,20 +47,44 @@ def format_uptime(raw_uptime):
     )
 
 
+async def make_contract_embed(ctx, contract: Contract):
+    embed = Embed(
+        title=f"Contract",
+        description=f"Contract Address: {contract.address}",
+        color=000000,
+    )
+    constant_functions = find_read_functions_without_input(contract.abi)
+    for function_name, details in constant_functions.items():
+        contract_function = getattr(contract.functions, function_name)
+        try:
+            output = contract_function().call()
+        except Exception as e:
+            LOGGER.error(f"Error calling function {function_name}: {e}")
+            embed.add_field(
+                name=function_name, value=f"Error calling function: {e}", inline=False
+            )
+            continue
+        if isinstance(output, bytes):
+            output = output.hex()
+        embed.add_field(name=function_name, value=output, inline=False)
+    embed.set_footer(text=f"Contract requested by: {ctx.author.display_name}")
+    return embed
+
+
 async def make_status_embed(w3c, ctx):
     embed = Embed(title=f"{w3c.name} Status", color=000000, description="")
-
-    embed.add_field(name="Processed", value=w3c.events_processed, inline=True)
-    embed.add_field(name="Subscribers", value=len(w3c._subscribers), inline=True)
-    embed.add_field(name="Events", value=len(w3c.events), inline=True)
-    embed.add_field(name="Loop Interval", value=w3c.loop_interval, inline=True)
-    embed.add_field(name="Batch Size", value=w3c.batch_size, inline=True)
+    scanner, manager = w3c.scanner, w3c.subscription_manager
+    embed.add_field(name="Processed", value=scanner.events_processed, inline=True)
+    embed.add_field(name="Subscribers", value=len(manager.subscribers), inline=True)
+    embed.add_field(name="Events", value=len(scanner.events), inline=True)
+    embed.add_field(name="Loop Interval", value=scanner.loop_interval, inline=True)
+    embed.add_field(name="Batch Size", value=scanner.batch_size, inline=True)
 
     uptime = format_uptime(w3c.uptime)
     embed.add_field(name="Uptime", value=uptime, inline=True)
 
     contract_events = defaultdict(list)
-    for event_type in w3c.events:
+    for event_type in scanner.events:
         contract_events[event_type.address].append(event_type.name)
 
     human_readable_events = []

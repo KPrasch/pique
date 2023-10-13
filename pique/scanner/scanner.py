@@ -1,4 +1,5 @@
 import asyncio
+from abc import ABC, abstractmethod
 from asyncio import Queue
 from typing import List
 
@@ -7,11 +8,28 @@ from pique.log import LOGGER
 from pique.scanner.events import EventContainer, Event
 
 
-class EventScanner:
-    def __init__(
-        self, events, providers, batch_size, start_block, loop_interval, queue: Queue
-    ):
+class AbstractEventScanner(ABC):
+
+    def __init__(self, queue: Queue):
         self.queue = queue
+
+    @abstractmethod
+    async def start(self):
+        """Start the EventScanner background tasks."""
+        pass
+
+    async def handle_events(self, events: List[Event]) -> None:
+        LOGGER.debug(f"Handling {len(events)} events")
+        for event in events:
+            await self.queue.put(event)
+            LOGGER.debug(f"Added event #{event.id[:8]} to task queue (size: {self.queue.qsize()})")
+
+
+class EventScanner(AbstractEventScanner):
+    def __init__(
+        self, events, providers, batch_size, start_block, loop_interval, *args, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
         self.events = events
         self.providers = providers
         self.batch_size = batch_size
@@ -56,13 +74,6 @@ class EventScanner:
                 self.events_processed += num_new_events
             except Exception as e:
                 LOGGER.error(f"Error in check_web3_events: {e}")
-
-    async def handle_events(self, events: List[Event]) -> None:
-        LOGGER.debug(f"Handling {len(events)} events")
-        for event in events:
-            await self.queue.put(event)
-            LOGGER.debug(f"Added event #{event.id[:8]} to task queue")
-            LOGGER.debug(f"Task queue size: {self.queue.qsize()}")
 
     async def check_web3_events(self):
         LOGGER.debug("Next round of web3 event checking.")

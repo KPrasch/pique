@@ -3,7 +3,7 @@ import datetime
 from discord import Intents
 from discord.ext import commands
 
-from pique.discord.embeds import make_status_embed
+from pique.discord.embeds import make_status_embed, make_contract_embed
 from pique.log import LOGGER
 from pique.scanner.scanner import EventScanner
 from pique.subscriptions import DiscordSubscriber, SubscriptionManager
@@ -58,6 +58,32 @@ class PiqueCog(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as e:
             LOGGER.error(f"Error in status: {e}")
+
+    @commands.command()
+    async def contract(self, ctx, address: str):
+        LOGGER.debug(f"Contract requested by {ctx.author.display_name}")
+        try:
+            for event in self.scanner.events:
+                LOGGER.debug(f"Checking {event._type.address} == {address}")
+                if event._type.address.lower() == address.lower():
+                    LOGGER.debug(f"Found contract {address}")
+                    break
+            else:
+                LOGGER.debug(f"Contract {address} not found")
+                await ctx.send(f"Contract {address} not found")
+                return
+
+            abi = event._type.contract_abi
+            contract = event.w3.eth.contract(address=address, abi=abi)
+        except Exception as e:
+            LOGGER.error(f"Error in contract: {e}")
+            await ctx.send(f"Error in contract: {e}")
+            return
+        try:
+            embed = await make_contract_embed(ctx=ctx, contract=contract)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            LOGGER.error(f"Error in contract: {e}")
 
     def _connect_subscriber_channels(self):
         for subscriber in self.subscription_manager.subscribers:
