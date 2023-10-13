@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from asyncio import Queue
 from typing import List
-from typing import TypedDict, Optional
+from typing import Optional
 
 from discord import TextChannel
 

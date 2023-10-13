@@ -5,7 +5,7 @@ import click
 from pique.config import PiqueConfig
 from pique.constants import defaults
 from pique.log import LOGGER
-from pique.run import run_discord_bot
+from pique.services import run_discord_bot
 
 
 @click.command()

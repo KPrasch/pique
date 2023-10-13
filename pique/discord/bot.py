@@ -22,10 +22,7 @@ class PiqueBot(commands.Cog):
         intents.typing = True
         intents.messages = True
         LOGGER.info(f"Limited intents to {intents}")
-        self.bot = commands.Bot(
-            command_prefix=command_prefix,
-            intents=intents
-        )
+        self.bot = commands.Bot(command_prefix=command_prefix, intents=intents)
         self.name = name
         self.__token = token
         self.scanner = event_scanner
