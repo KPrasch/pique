@@ -1,7 +1,7 @@
 from asyncio import Queue
 
 from pique.config import PiqueConfig
-from pique.discord.bot import PiqueBot
+from pique.discord.bot import PiqueCog
 from pique.scanner.scanner import EventScanner
 from pique.subscriptions import SubscriptionManager
 
@@ -16,7 +16,7 @@ async def _run_internal_services(config: PiqueConfig):
 
 async def run_discord_bot(config):
     scanner, manager = await _run_internal_services(config)
-    bot = PiqueBot(
+    bot = PiqueCog(
         name=config.name,
         command_prefix=config.discord.command_prefix,
         token=config.discord.token,

@@ -1,1 +1,0 @@
-THROTTLE = 0.1

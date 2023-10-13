@@ -2,7 +2,7 @@ import asyncio
 from asyncio import Queue
 from typing import List
 
-from pique.constants._tweaks import THROTTLE
+from pique.constants import _throttle
 from pique.log import LOGGER
 from pique.scanner.events import EventContainer, Event
 
@@ -86,11 +86,13 @@ class EventScanner:
                         f"Finished fetching events from {start_block} to {start_block + self.batch_size}"
                     )
                     start_block += self.batch_size
+                    await asyncio.sleep(_throttle.BATCH)
+
                 LOGGER.debug(
                     f"Finished scanning {event_container.name}|{event_container.address[:8]}"
                 )
 
-                await asyncio.sleep(THROTTLE)
+                await asyncio.sleep(_throttle.SCANNER)
         except Exception as e:
             LOGGER.error(f"Error in check_web3_events: {e}")
 

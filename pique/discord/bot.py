@@ -9,7 +9,7 @@ from pique.scanner.scanner import EventScanner
 from pique.subscriptions import DiscordSubscriber, SubscriptionManager
 
 
-class PiqueBot(commands.Cog):
+class PiqueCog(commands.Cog):
     def __init__(
         self,
         name: str,
@@ -30,6 +30,13 @@ class PiqueBot(commands.Cog):
         self.start_time = datetime.datetime.now()
         LOGGER.debug(f"Initialized {self.name}")
 
+    @property
+    def uptime(self):
+        if self.start_time is None:
+            return "Bot is not active"
+        else:
+            return datetime.datetime.now() - self.start_time
+
     async def start(self):
         await self.bot.add_cog(self)
         LOGGER.debug(f"Starting Bot...")
@@ -43,30 +50,6 @@ class PiqueBot(commands.Cog):
         except Exception as e:
             LOGGER.error(f"Error in on_ready: {e}")
 
-    def _connect_subscriber_channels(self):
-        for subscriber in self.subscription_manager.subscribers:
-            if not isinstance(subscriber, DiscordSubscriber):
-                continue
-
-            channel = self.bot.get_channel(subscriber.channel_id)
-            if not channel:
-                LOGGER.error(f"Could not find channel with ID {subscriber.channel_id}")
-                continue
-
-            LOGGER.info(f"Found channel {channel.name} with ID {channel.id}")
-            subscriber.channel = channel
-
-            for event in self.scanner.events:
-                # subscribe to all events
-                self.subscription_manager.subscribe(event=event, subscriber=subscriber)
-
-    @property
-    def uptime(self):
-        if self.start_time is None:
-            return "Bot is not active"
-        else:
-            return datetime.datetime.now() - self.start_time
-
     @commands.command()
     async def status(self, ctx):
         LOGGER.debug(f"Status requested by {ctx.author.display_name}")
@@ -75,3 +58,26 @@ class PiqueBot(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as e:
             LOGGER.error(f"Error in status: {e}")
+
+    def _connect_subscriber_channels(self):
+        for subscriber in self.subscription_manager.subscribers:
+
+            # skip non-discord subscribers
+            if not isinstance(subscriber, DiscordSubscriber):
+                continue
+
+            # connect the channel
+            channel = self.bot.get_channel(subscriber.channel_id)
+            if not channel:
+                LOGGER.error(f"Could not find channel with ID {subscriber.channel_id}")
+                continue
+
+            # set the channel
+            LOGGER.info(f"Found channel {channel.name} with ID {channel.id}")
+            subscriber.channel = channel
+
+            # subscribe to events
+            for event in self.scanner.events:
+                # subscribe to all events by default
+                # TODO: allow for more granular subscription
+                self.subscription_manager.subscribe(event=event, subscriber=subscriber)

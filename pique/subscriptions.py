@@ -7,7 +7,7 @@ from typing import Optional
 from discord import TextChannel
 
 from pique.config import PiqueConfig
-from pique.constants._tweaks import THROTTLE
+from pique.constants import _throttle
 from pique.discord.embeds import create_event_embed
 from pique.log import LOGGER
 
@@ -89,7 +89,7 @@ class SubscriptionManager:
             LOGGER.debug(f"Processing event #{event.id[:8]}")
             await self.notify(event)
             self.event_queue.task_done()
-            await asyncio.sleep(THROTTLE)
+            await asyncio.sleep(_throttle.PUBLISHER)
 
     def start(self):
         asyncio.create_task(self.process_queue())
