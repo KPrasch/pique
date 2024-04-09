@@ -12,8 +12,8 @@ def _inline_code(text):
     return f"`{text}`"
 
 
-def _etherscan_link(network, explorer, path, text):
-    base_url = f"https://{network}.{explorer}"
+def _blockchain_explorer_link(explorer, path, text):
+    base_url = f"https://{explorer}"
     return f"[{text}]({base_url}/{path})"
 
 
@@ -103,30 +103,15 @@ async def make_status_embed(w3c, ctx):
     embed.set_footer(text=f"Status requested by: {ctx.author.display_name}")
     return embed
 
-
-def get_field_values(event, base_url):
-    contract_address_link = _etherscan_link(event.contract_address, "address", base_url)
-    transaction_hash_link = _etherscan_link(event.tx_hash.hex(), "tx", base_url)
-    block_number_link = _etherscan_link(event.block_number, "block", base_url)
-
-    return {
-        "Contract Address": (contract_address_link, False),
-        "Transaction Hash": (transaction_hash_link, False),
-        "Block Number": (block_number_link, True),
-        "Transaction Index": (event.tx_index, True),
-        "Log Index": (event.log_index, True),
-    }
-
-
-def add_predefined_fields(embed, event, network, explorer):
-    contract_link = _etherscan_link(
-        network, explorer, f"address/{event.contract_address}", event.contract_address
+def add_predefined_fields(embed, event, explorer):
+    contract_link = _blockchain_explorer_link(
+        explorer, f"address/{event.contract_address}", event.contract_address
     )
-    tx_link = _etherscan_link(
-        network, explorer, f"tx/{event.tx_hash.hex()}", event.tx_hash.hex()
+    tx_link = _blockchain_explorer_link(
+        explorer, f"tx/{event.tx_hash.hex()}", event.tx_hash.hex()
     )
-    block_link = _etherscan_link(
-        network, explorer, f"block/{event.block_number}", str(event.block_number)
+    block_link = _blockchain_explorer_link(
+        explorer, f"block/{event.block_number}", str(event.block_number)
     )
     embed.add_field(name="Contract Address", value=contract_link, inline=False)
     embed.add_field(name="Transaction Hash", value=tx_link, inline=False)
@@ -146,7 +131,7 @@ def create_event_embed(event: "Event"):
     )
 
     # Add fields to the embed
-    add_predefined_fields(embed, event, network, explorer)
+    add_predefined_fields(embed, event, explorer)
     add_event_args_fields(embed, event)
 
     LOGGER.debug(f"Created embed for event: {event}")
