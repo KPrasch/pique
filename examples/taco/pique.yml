@@ -17,18 +17,18 @@ contracts:
   loop_interval: 180  # seconds
   track:
   - name: "Coordinator"
-    address: "0x8E49989F9D3aD89c8ab0de21FbA2E00C67ca872F"
+    address: "0xE9e94499bB0f67b9DBD75506ec1735486DE57770"
     description: "Lynx Domain DKG"
-    chain_id: 80001
-    abi_file: './abis/Coordinator.json'
+    chain_id: 80002
+    abi_file: './abis/CoordinatorLynx.json'
     events:
       - EndRitual
       - StartRitual
-  - name: "Coodinator"
-    address: "0xF429C1f2d42765FE2b04CC62ab037564C2C66e5E"
+  - name: "Coordinator"
+    address: "0xE690b6bCC0616Dc5294fF84ff4e00335cA52C388"
     description: "Tapir Domain DKG"
-    chain_id: 80001
-    abi_file: './abis/Coordinator.json'
+    chain_id: 80002
+    abi_file: './abis/CoordinatorTapir.json'
     events:
       - StartRitual
       - EndRitual

@@ -1,1 +1,1 @@
-To excute the demo run: `pique`.
+To execute the demo run: `pique`.
