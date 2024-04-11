@@ -3,7 +3,7 @@ from collections import defaultdict
 from discord import Embed
 from web3.contract import Contract
 
-from pique._utils import bytes_to_hex, find_read_functions_without_input
+from pique._utils import find_read_functions_without_input
 from pique.constants.networks import NETWORKS
 from pique.log import LOGGER
 
@@ -103,6 +103,7 @@ async def make_status_embed(w3c, ctx):
     embed.set_footer(text=f"Status requested by: {ctx.author.display_name}")
     return embed
 
+
 def add_predefined_fields(embed, event, explorer):
     contract_link = _blockchain_explorer_link(
         explorer, f"address/{event.contract_address}", event.contract_address
@@ -121,7 +122,7 @@ def add_predefined_fields(embed, event, explorer):
 
 
 def create_event_embed(event: "Event"):
-    network, explorer = NETWORKS[event.chain_id]
+    explorer = NETWORKS[event.chain_id]["explorer"]
 
     embed = Embed(
         title=f"New {event.contract_name} {event.event_type} Event",
