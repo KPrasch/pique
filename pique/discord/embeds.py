@@ -7,6 +7,24 @@ from pique._utils import find_read_functions_without_input
 from pique.constants.networks import NETWORKS
 from pique.log import LOGGER
 
+MAX_EMBED_CHARS = 1024
+
+
+def truncate_middle(value: str, max_size: int):
+    if len(value) <= max_size:
+        return value
+
+    if max_size < 5:
+        # don't expect to get here but for safety
+        # 5 because letter on either end with ellipsis in the middle i.e. "_..._"
+        return f"{value[:1]}..."
+
+    first_half_end_index = max_size // 2 - 1  # one less than center
+    first_half_text = value[:first_half_end_index]
+
+    second_half_length = max_size - len(first_half_text) - 3  # remove 3 for the ellipsis
+    return f"{first_half_text}...{value[-second_half_length:]}"
+
 
 def _inline_code(text):
     return f"`{text}`"
@@ -35,7 +53,8 @@ def pretty_format_blocks(latest_scanned_blocks):
 
 def add_event_args_fields(embed, event):
     for key, val in event.args.items():
-        embed.add_field(name=key, value=_inline_code(str(val)), inline=False)
+        text = truncate_middle(str(val), MAX_EMBED_CHARS-2)  # -2 because of ticks (``) used below
+        embed.add_field(name=key, value=f"`{text}`", inline=False)
 
 
 def format_uptime(raw_uptime):
