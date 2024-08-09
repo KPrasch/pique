@@ -3,17 +3,35 @@ from collections import defaultdict
 from discord import Embed
 from web3.contract import Contract
 
-from pique._utils import bytes_to_hex, find_read_functions_without_input
+from pique._utils import find_read_functions_without_input
 from pique.constants.networks import NETWORKS
 from pique.log import LOGGER
+
+MAX_EMBED_CHARS = 1024
+
+
+def truncate_middle(value: str, max_size: int):
+    if len(value) <= max_size:
+        return value
+
+    if max_size < 5:
+        # don't expect to get here but for safety
+        # 5 because letter on either end with ellipsis in the middle i.e. "_..._"
+        return f"{value[:1]}..."
+
+    first_half_end_index = max_size // 2 - 1  # one less than center
+    first_half_text = value[:first_half_end_index]
+
+    second_half_length = max_size - len(first_half_text) - 3  # remove 3 for the ellipsis
+    return f"{first_half_text}...{value[-second_half_length:]}"
 
 
 def _inline_code(text):
     return f"`{text}`"
 
 
-def _etherscan_link(network, explorer, path, text):
-    base_url = f"https://{network}.{explorer}"
+def _blockchain_explorer_link(explorer, path, text):
+    base_url = f"https://{explorer}"
     return f"[{text}]({base_url}/{path})"
 
 
@@ -35,7 +53,8 @@ def pretty_format_blocks(latest_scanned_blocks):
 
 def add_event_args_fields(embed, event):
     for key, val in event.args.items():
-        embed.add_field(name=key, value=_inline_code(str(val)), inline=False)
+        text = truncate_middle(str(val), MAX_EMBED_CHARS-2)  # -2 because of ticks (``) used below
+        embed.add_field(name=key, value=f"`{text}`", inline=False)
 
 
 def format_uptime(raw_uptime):
@@ -104,29 +123,15 @@ async def make_status_embed(w3c, ctx):
     return embed
 
 
-def get_field_values(event, base_url):
-    contract_address_link = _etherscan_link(event.contract_address, "address", base_url)
-    transaction_hash_link = _etherscan_link(event.tx_hash.hex(), "tx", base_url)
-    block_number_link = _etherscan_link(event.block_number, "block", base_url)
-
-    return {
-        "Contract Address": (contract_address_link, False),
-        "Transaction Hash": (transaction_hash_link, False),
-        "Block Number": (block_number_link, True),
-        "Transaction Index": (event.tx_index, True),
-        "Log Index": (event.log_index, True),
-    }
-
-
-def add_predefined_fields(embed, event, network, explorer):
-    contract_link = _etherscan_link(
-        network, explorer, f"address/{event.contract_address}", event.contract_address
+def add_predefined_fields(embed, event, explorer):
+    contract_link = _blockchain_explorer_link(
+        explorer, f"address/{event.contract_address}", event.contract_address
     )
-    tx_link = _etherscan_link(
-        network, explorer, f"tx/{event.tx_hash.hex()}", event.tx_hash.hex()
+    tx_link = _blockchain_explorer_link(
+        explorer, f"tx/{event.tx_hash.hex()}", event.tx_hash.hex()
     )
-    block_link = _etherscan_link(
-        network, explorer, f"block/{event.block_number}", str(event.block_number)
+    block_link = _blockchain_explorer_link(
+        explorer, f"block/{event.block_number}", str(event.block_number)
     )
     embed.add_field(name="Contract Address", value=contract_link, inline=False)
     embed.add_field(name="Transaction Hash", value=tx_link, inline=False)
@@ -136,7 +141,7 @@ def add_predefined_fields(embed, event, network, explorer):
 
 
 def create_event_embed(event: "Event"):
-    network, explorer = NETWORKS[event.chain_id]
+    explorer = NETWORKS[event.chain_id]["explorer"]
 
     embed = Embed(
         title=f"New {event.contract_name} {event.event_type} Event",
@@ -146,7 +151,7 @@ def create_event_embed(event: "Event"):
     )
 
     # Add fields to the embed
-    add_predefined_fields(embed, event, network, explorer)
+    add_predefined_fields(embed, event, explorer)
     add_event_args_fields(embed, event)
 
     LOGGER.debug(f"Created embed for event: {event}")
